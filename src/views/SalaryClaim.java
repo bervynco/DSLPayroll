@@ -357,8 +357,7 @@ public class SalaryClaim extends javax.swing.JFrame {
         // TODO add your handling code here:
         try {
             this.setVisible(false);
-            String[] employeePages = null;
-            Main main = new Main(this.sessionUser, employeePages, "Payroll");
+            Main main = new Main(this.sessionUser, this.employeePages, "Payroll");
             main.setTitle("DSL Time Logging | Main Page");
             main.setExtendedState(JFrame.MAXIMIZED_BOTH); 
                     //menu.setUndecorated(true);

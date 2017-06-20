@@ -142,8 +142,7 @@ public class AlternativeLogIn extends javax.swing.JFrame {
                 if(user.getRole().equals("Administrator") || user.getRole().equals("Co-Administrator") || user.getRole().equals("Payroll")){
                     JOptionPane.showMessageDialog(panel, "Login Successful", "Success", JOptionPane.INFORMATION_MESSAGE);
                     this.setVisible(false);
-                    String[] employeePages = user.getPages().replaceFirst("^\\[", "").replaceFirst("\\]$", "").split(", ");
-                    Main menu = new Main(user, employeePages, "Employees");
+                    Main menu = new Main(user, "Employees");
                     menu.setTitle("DSL Time Logging | Menu");
                     menu.pack();
                     menu.setLocationRelativeTo(null);

@@ -157,7 +157,7 @@ public class ViewNotes extends javax.swing.JFrame {
             // TODO add your handling code here:
             this.setVisible(false);
             String[] employeePages = null;
-            Main main = new Main(this.sessionUser, employeePages, "Employee");
+            Main main = new Main(this.sessionUser, this.employeePages, "Employee");
             main.setTitle("DSL Time Logging | Main Page");
             main.setLocationRelativeTo(null);
             main.setExtendedState(JFrame.MAXIMIZED_BOTH); 
@@ -187,7 +187,7 @@ public class ViewNotes extends javax.swing.JFrame {
                     // TODO add your handling code here:
                     this.setVisible(false);
                     String[] employeePages = null;
-                    Main main = new Main(this.sessionUser, employeePages, "Notes");
+                    Main main = new Main(this.sessionUser, this.employeePages, "Notes");
                     main.setTitle("DSL Time Logging | Main Page");
                     main.setExtendedState(JFrame.MAXIMIZED_BOTH); 
                     //menu.setUndecorated(true);

@@ -33,7 +33,7 @@ public class AddNote extends javax.swing.JFrame {
     private static List<User> employees = new ArrayList<User>();
     private static String location = null;
     // private static ArrayList<String> employeePages = new ArrayList<>();
-    private static String[] employeePages = null;
+    private static ArrayList<String> employeePages = new ArrayList<String>();
     private final JPanel panel = new JPanel();
     public void FillComboBox() throws SQLException, ClassNotFoundException{
         employees = DB.getUsers();
@@ -44,7 +44,7 @@ public class AddNote extends javax.swing.JFrame {
         }
 
     }
-    public AddNote(User user, String[] employeePages) throws ClassNotFoundException, SQLException, ParseException {
+    public AddNote(User user, ArrayList<String>employeePages) throws ClassNotFoundException, SQLException, ParseException {
         this.sessionUser = user;
         this.employeePages = employeePages;
         this.location = location;
@@ -167,8 +167,7 @@ public class AddNote extends javax.swing.JFrame {
         this.setVisible(false);
         try {
             // TODO add your handling code here:
-            String[] employeePages = null;
-            Main main = new Main(this.sessionUser, employeePages, "Notes");
+            Main main = new Main(this.sessionUser, this.employeePages, "Notes");
             main.setTitle("DSL Time Logging | Main Page");
             main.setLocationRelativeTo(null);
             main.setExtendedState(JFrame.MAXIMIZED_BOTH); 
@@ -234,8 +233,7 @@ public class AddNote extends javax.swing.JFrame {
                 try {
                     // TODO add your handling code here:
                     this.setVisible(false);
-                    String[] employeePages = null;
-                    Main main = new Main(this.sessionUser, employeePages, "Notes");
+                    Main main = new Main(this.sessionUser, this.employeePages, "Notes");
                     main.setTitle("DSL Time Logging | Main Page");
                     main.setLocationRelativeTo(null);
                     main.setExtendedState(JFrame.MAXIMIZED_BOTH); 

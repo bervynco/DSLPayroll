@@ -742,8 +742,7 @@ public class EditEmployee extends javax.swing.JFrame {
         try {
             // TODO add your handling code here:
             this.setVisible(false);
-            String[] employeePages = null;
-            AddNote note = new AddNote(this.sessionUser, employeePages);
+            AddNote note = new AddNote(this.sessionUser, this.employeePages);
             note.setTitle("DSL Time Logging | Add Note");
             note.pack();
             note.setLocationRelativeTo(null);
@@ -775,8 +774,7 @@ public class EditEmployee extends javax.swing.JFrame {
                     this.setVisible(false);
                     Main main;
                     try {
-                        String [] employeePages = null;
-                        main = new Main(this.sessionUser, employeePages, "Employees");
+                        main = new Main(this.sessionUser, this.employeePages, "Employees");
                         main.setTitle("DSL Time Logging | Main");
                         main.pack();
                         main.setLocationRelativeTo(null);
@@ -810,8 +808,7 @@ public class EditEmployee extends javax.swing.JFrame {
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
         try {
             this.setVisible(false);
-            String [] employeePages = null;
-            Main main = new Main(this.sessionUser, employeePages, "Employees");
+            Main main = new Main(this.sessionUser, this.employeePages, "Employees");
             main.setTitle("DSL Time Logging | Main");
             main.pack();
             main.setLocationRelativeTo(null);
@@ -974,7 +971,7 @@ public class EditEmployee extends javax.swing.JFrame {
                         Main main ;
                         try {
                             String[] employeePages = null;
-                            main = new Main(this.sessionUser, employeePages, "Employees");
+                            main = new Main(this.sessionUser, this.employeePages, "Employees");
                             main.setTitle("DSL Time Logging | Employees");
                             main.pack();
                             main.setLocationRelativeTo(null);

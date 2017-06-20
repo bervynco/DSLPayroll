@@ -36,9 +36,9 @@ public class AddEmployee extends javax.swing.JFrame {
     private Reader m_reader;
     private Fmd fmd;
     private static User sessionUser = null;
-    private static String[] employeePages;
+    private static ArrayList<String>employeePages = new ArrayList<String>();
     private final JPanel panel = new JPanel();
-    public AddEmployee(User user, String[] employeePages) throws ClassNotFoundException, SQLException, ParseException {
+    public AddEmployee(User user, ArrayList<String>employeePages) throws ClassNotFoundException, SQLException, ParseException {
         this.setTitle("DSL Add Employee");
         initComponents();
         this.sessionUser = user;
@@ -535,23 +535,18 @@ public class AddEmployee extends javax.swing.JFrame {
         // TODO add your handling code here:
         ArrayList<String> pageNames = new ArrayList<>();
         if(jCheckboxAddEmployee.isSelected()){
-            System.out.println("ADD EMPLOYEE" + jCheckboxAddEmployee.isSelected());
             pageNames.add(jCheckboxAddEmployee.getText());
         }
         if(jCheckboxEditEmployee.isSelected()){
-            System.out.println("EDIT EMPLOYEE" + jCheckboxEditEmployee.isSelected());
             pageNames.add(jCheckboxEditEmployee.getText());
         }
         if(jCheckboxDeleteEmployee.isSelected()){
-            System.out.println("DELETE EMPLOYEE" + jCheckboxDeleteEmployee.isSelected());
             pageNames.add(jCheckboxDeleteEmployee.getText());
         }
         if(jCheckBoxPayroll.isSelected()){
-            System.out.println("PAYROLL" + jCheckBoxPayroll.isSelected());
             pageNames.add("Payroll");
         }
         if(jCheckboxReports.isSelected()){
-            System.out.println("REPORTS" + jCheckboxReports.isSelected());
             pageNames.add(jCheckboxReports.getText());
         }
         if(jCheckBoxUpload.isSelected()){

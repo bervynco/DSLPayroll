@@ -116,7 +116,6 @@ public class Signature extends javax.swing.JFrame {
                             try {
                                 window.setVisible(false);
                                 JOptionPane.showMessageDialog(panel, "Successfully claimed salary", "Success", JOptionPane.INFORMATION_MESSAGE);
-                                String[] employeePages = null;
                                 Main list = new Main(sessionUser, employeePages, "Employees");
                                 list.setTitle("DSL Time Logging | Main Menu");
                                 list.pack();

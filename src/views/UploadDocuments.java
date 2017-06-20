@@ -188,7 +188,7 @@ public class UploadDocuments extends javax.swing.JFrame {
         try {
             this.setVisible(false);
             String[] employeePages = null;
-            Main menu = new  Main(this.sessionUser, employeePages, "Upload Document");
+            Main menu = new  Main(this.sessionUser, this.employeePages, "Upload Document");
             menu.setTitle("DSL Time Logging | Menu");
             menu.pack();
             menu.setLocationRelativeTo(null);
@@ -258,7 +258,7 @@ public class UploadDocuments extends javax.swing.JFrame {
                 JOptionPane.showMessageDialog(panel, "File upload successful", "Success", JOptionPane.INFORMATION_MESSAGE);
                 this.setVisible(false);
                 String[] employeePages = null;
-                Main menu = new  Main(this.sessionUser, employeePages, "Upload Document");
+                Main menu = new  Main(this.sessionUser, this.employeePages, "Upload Document");
                 menu.setTitle("DSL Time Logging | Menu");
                 menu.pack();
                 menu.setLocationRelativeTo(null);

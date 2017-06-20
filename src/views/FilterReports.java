@@ -232,8 +232,7 @@ public class FilterReports extends javax.swing.JFrame {
                         }
                     }
                     JOptionPane.showMessageDialog(panel, "Report Successfully generated. Proceed to C:/PDF for your report", "Success", JOptionPane.INFORMATION_MESSAGE);
-                    String[] employeePages = null;
-                    Main menu = new Main( this.sessionUser, employeePages, "Reports");
+                    Main menu = new Main( this.sessionUser, this.employeePages, "Reports");
                     menu.setTitle("DSL Time Logging | Menu");
                     menu.pack();
                     menu.setLocationRelativeTo(null);
@@ -260,8 +259,7 @@ public class FilterReports extends javax.swing.JFrame {
         try {
             // TODO add your handling code here:
             this.setVisible(false);
-            String[] employeePages = null;
-            Main menu = new Main( this.sessionUser, employeePages, "Reports");
+            Main menu = new Main( this.sessionUser, this.employeePages, "Reports");
             menu.setTitle("DSL Time Logging | Menu");
             menu.pack();
             menu.setLocationRelativeTo(null);

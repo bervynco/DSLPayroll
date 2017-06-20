@@ -413,7 +413,6 @@ public class ClaimSalary extends javax.swing.JFrame {
             if(status.equals("Successful")){
                 this.setVisible(false);
                 Signature signature = new Signature(this.sessionUser, this.employeePages, this.dateStart, this.dateEnd);
-                String[] employeePages = null;
                 Main main = new Main(this.sessionUser, employeePages, "Payroll");
                 main.setTitle("DSL Time Logging | Main");
                 main.pack();
@@ -442,7 +441,7 @@ public class ClaimSalary extends javax.swing.JFrame {
         try {
             String[] employeePages = null;
             this.setVisible(false);
-            list = new Main(this.sessionUser, employeePages, "Claim Salary");
+            list = new Main(this.sessionUser, this.employeePages, "Claim Salary");
             list.setTitle("DSL Time Logging | Main");
             list.pack();
             list.setLocationRelativeTo(null);

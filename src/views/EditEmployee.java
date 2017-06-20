@@ -1031,8 +1031,19 @@ public class EditEmployee extends javax.swing.JFrame {
         txtTelephoneNumber.setText(user.getTelephoneNumber());
         txtAddress.setText(user.getAddress());
         txtRate.setText(Float.toString(user.getRate()));
-        txtTimeIn.setText(user.getTimeIn());
-        txtTimeOut.setText(user.getTimeOut());
+        if(user.getTimeIn() == null){
+            txtTimeIn.setText("1-1-2017");
+        }
+        else{
+            txtTimeIn.setText(user.getTimeIn());
+        }
+        if(user.getTimeOut() == null){
+            txtTimeOut.setText("1-1-2017");
+        }
+        else{
+            txtTimeOut.setText(user.getTimeOut());
+        }
+        
         //getRole()
         txtSSSNumber.setText(user.getSSSNumber());
         txtPhilHealth.setText(user.getPhilHealthNumber());

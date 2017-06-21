@@ -776,7 +776,7 @@ public class Main extends javax.swing.JFrame {
 
     private void menuLogoutMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_menuLogoutMouseClicked
         // TODO add your handling code here:
-        System.out.println("Log out");
+        System.exit(0);
     }//GEN-LAST:event_menuLogoutMouseClicked
 
     private void btnEditActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditActionPerformed

@@ -584,7 +584,7 @@ public class DB {
             employeeID = DB.insertUser(name);
         }
        
-        PreparedStatement ps = c.prepareStatement("INSERT INTO time_logs (employeeID, name, department, date, timeIn, timeOut) VALUES (?,?,?,?,?,?)");
+        PreparedStatement ps = c.prepareStatement("INSERT INTO time_logs (employeeID, name, department, logDate, timeIn, timeOut) VALUES (?,?,?,?,?,?)");
         ps.setInt(1, employeeID);
         ps.setString(2, name);
         ps.setString(3, department);
@@ -635,22 +635,23 @@ public class DB {
         PreparedStatement psDelete = c.prepareStatement("Truncate table payroll");
         psDelete.executeUpdate();
         // get date min max
-        PreparedStatement psDate = c.prepareStatement("Select MIN(`date`) as minDate, MAX(`date`) as maxDate from time_logs");
+        PreparedStatement psDate = c.prepareStatement("Select MIN(logDate) as minDate, MAX(logDate) as maxDate from time_logs");
         ResultSet rsDate = psDate.executeQuery();
         String startDate = null;
         String endDate = null;
-        while(rs.next()){
+        while(rsDate.next()){
             startDate = rsDate.getDate(1).toString();
             endDate = rsDate.getDate(2).toString();
         }
+        
         // end of get date min max
         //get holiday
             PreparedStatement psHoliday = c.prepareStatement("Select count(*) from holiday where holidayDate between "+ startDate +" AND " + endDate+ ";");
             ResultSet rsHoliday = psHoliday.executeQuery();
             int holidayCount = 0;
-            while(rsHoliday.next()){
-                holidayCount = rs.getInt(1);
-            }
+            rsHoliday.first();
+            holidayCount = rsHoliday.getInt(1);    
+
         //end of holiday
         for(int k = 0; k < userList.size(); k++){
             // get attendance count 
@@ -663,7 +664,7 @@ public class DB {
             // end of get attendance count
             
             //get bonus
-            PreparedStatement psBonus = c.prepareStatement("Select amount from salary_extra where employeeID = ? appliedDate between " + startDate +" AND " + endDate+ ";");
+            PreparedStatement psBonus = c.prepareStatement("Select amount from salary_extra where employeeID = ? and appliedDate between " + startDate +" AND " + endDate+ ";");
             psBonus.setInt(1, userList.get(k).getEmployeeID());
             ResultSet rsBonus = psBonus.executeQuery();
             float bonus = 0;
@@ -672,7 +673,7 @@ public class DB {
             }
             //end get bonus
             //get cash advance
-            PreparedStatement psAdvance = c.prepareStatement("Select amount from salary_condition where employeeID = ? and type = 'Cash Advance' appliedDate between " + startDate +" AND " + endDate+ ";");
+            PreparedStatement psAdvance = c.prepareStatement("Select amount from salary_condition where employeeID = ? and type = 'Cash Advance' AND appliedDate between " + startDate +" AND " + endDate+ ";");
             psAdvance.setInt(1, userList.get(k).getEmployeeID());
             ResultSet rsAdvance = psAdvance.executeQuery();
             float cashAdvance = 0;
@@ -680,7 +681,7 @@ public class DB {
                 cashAdvance = cashAdvance + rsAdvance.getFloat(1);
             }
             // end get cash advance
-            PreparedStatement psLoan = c.prepareStatement("Select amount from salary_condition where employeeID = ? and type = 'Loan' appliedDate between " + startDate +" AND " + endDate+ ";");
+            PreparedStatement psLoan = c.prepareStatement("Select amount from salary_condition where employeeID = ? and type = 'Loan' AND appliedDate between " + startDate +" AND " + endDate+ ";");
             psLoan.setInt(1, userList.get(k).getEmployeeID());
             ResultSet rsLoan = psLoan.executeQuery();
             float loan = 0;
@@ -1054,7 +1055,7 @@ public class DB {
         
         
         PreparedStatement ps = c.prepareStatement("SELECT employeeID, rate, sssDeduction, pagibigDeduction, philHealthDeduction, bonus, cashAdvance, loan, days, overTime,"+
-                "totalSalary, taxDeduction, claimDate, isClaimed from payroll a where employeeID = ? and a.claimDate BETWEEN '" + startDate + "' AND '" + endDate + "';");
+                "totalSalary, taxDeduction, claimDate, claimed from payroll a where employeeID = ? and a.claimDate BETWEEN '" + startDate + "' AND '" + endDate + "';");
         ps.setInt(1, employeeID);
         
         ResultSet rs = ps.executeQuery();
@@ -1149,8 +1150,8 @@ public class DB {
         endDay = cal2.get(Calendar.DATE);
         endYear = cal2.get(Calendar.YEAR);
 
-        PreparedStatement ps = c.prepareStatement("SELECT a.employeeID, concat(b.firstName, ' ', b.lastName) as 'Name', a.date, a.timeIn,"+
-                " a.timeOut from time_logs a, users b where b.employeeID = a.employeeID and a.employeeID = ? and date BETWEEN '" + startDate + "' AND '" + endDate + "'");
+        PreparedStatement ps = c.prepareStatement("SELECT a.employeeID, concat(b.firstName, ' ', b.lastName) as 'Name', a.logDate, a.timeIn,"+
+                " a.timeOut from time_logs a, users b where b.employeeID = a.employeeID and a.employeeID = ? and logDate BETWEEN '" + startDate + "' AND '" + endDate + "'");
 
         ps.setInt(1, employeeID);
         ResultSet rs = ps.executeQuery();

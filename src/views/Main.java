@@ -678,8 +678,8 @@ public class Main extends javax.swing.JFrame {
         try {
             // TODO add your handling code here:
             this.currentMenu = "Salary Conditions";
-            btnEdit.setVisible(true);
-            btnDelete.setVisible(true);
+            btnEdit.setVisible(false);
+            btnDelete.setVisible(false);
             btnAdd.setVisible(true);
             btnAdd.setLabel("Add");
             lblTitle.setText("List of Salary Conditions");

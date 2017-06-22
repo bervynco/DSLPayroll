@@ -258,8 +258,8 @@ public class DB {
             payroll.setLoan(rs.getFloat(10));
             payroll.setDays(rs.getInt(11));
             payroll.setOverTime(rs.getFloat(12));
-            payroll.setTotalSalary(rs.getInt(13));
-            payroll.setTaxDeduction(rs.getFloat(14));
+            payroll.setTaxDeduction(rs.getFloat(13));
+            payroll.setTotalSalary(rs.getInt(14));
             payroll.setIsClaimed(rs.getString(15));
             payroll.setClaimDate(rs.getTimestamp(16));
             
@@ -632,7 +632,7 @@ public class DB {
             userList.add(user);
         }
         
-        PreparedStatement psDelete = c.prepareStatement("Truncate table payroll");
+        PreparedStatement psDelete = c.prepareStatement("Delete from payroll");
         psDelete.executeUpdate();
         // get date min max
         PreparedStatement psDate = c.prepareStatement("Select MIN(logDate) as minDate, MAX(logDate) as maxDate from time_logs");
@@ -806,7 +806,13 @@ public class DB {
             return "Failed";
         }
     }
-    
+    public static void deleteAllTimeLogs() throws ClassNotFoundException, SQLException{
+        Connection c = connect();
+        PreparedStatement ps = c.prepareStatement("Delete from time_logs");
+        ps.executeUpdate();
+        
+        c.close();
+    }
     
     
     

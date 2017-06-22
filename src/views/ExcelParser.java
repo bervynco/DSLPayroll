@@ -49,6 +49,7 @@ public class ExcelParser {
         List<Integer> columnIDs = new ArrayList<Integer>();
         Cell c;
         DB db = new DB();
+        db.deleteAllTimeLogs();
         for(int k = 0; k < array.length; k++){
             for (int i = 0; i < lastCell; i++) {
                 c = rowHeader.getCell(i);

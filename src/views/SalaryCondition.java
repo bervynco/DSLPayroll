@@ -115,7 +115,7 @@ public class SalaryCondition extends javax.swing.JFrame {
         try {
             // TODO add your handling code here:
             this.setVisible(false);
-            Main main = new Main(this.sessionUser, this.employeePages, "Employee");
+            Main main = new Main(this.sessionUser, this.employeePages, "Employees");
             main.setTitle("DSL Time Logging | Main Page");
             main.setLocationRelativeTo(null);
             main.setExtendedState(JFrame.MAXIMIZED_BOTH);

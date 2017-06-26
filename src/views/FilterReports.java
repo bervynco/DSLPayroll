@@ -32,7 +32,6 @@ public class FilterReports extends javax.swing.JFrame {
         employees = DB.getUsers();
         String [] employeeNames = null;
         jComboBox1.addItem("All");
-        System.out.println(employees.size());
         for(int i = 0; i < employees.size(); i++){
             String name = employees.get(i).getFirstName() + " " + employees.get(i).getLastName();
             jComboBox1.addItem(name);
@@ -207,6 +206,7 @@ public class FilterReports extends javax.swing.JFrame {
             }
             else{
                 try {
+                    this.setVisible(false);
                     if(name.equals("All")){
                         try {
                             users = DB.getUsers();

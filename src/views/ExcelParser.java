@@ -28,13 +28,18 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 public class ExcelParser {
     private static User sessionUser = null;
     private static ArrayList<String> employeePages = new ArrayList<>();
-    
+    LoadingFrame frame = new LoadingFrame();
     public ExcelParser(User user, ArrayList<String> employeePages){
         this.sessionUser = user;
         this.employeePages = employeePages;
+        
     }
     public void parseExcel(File selectedFile) throws FileNotFoundException, IOException, ParseException, ClassNotFoundException, SQLException{
         // String excelFilePath = "C:\\Users\\L R E\\Desktop\\attn1.xlsx";
+        
+        
+        frame.instantiateLoadBar();
+        frame.setVisible(true);
         FileInputStream inputStream = new FileInputStream(selectedFile);
         
         Workbook workbook = new XSSFWorkbook(inputStream);
@@ -100,6 +105,7 @@ public class ExcelParser {
         }
         DB.computeForPayout();
         workbook.close();
+        frame.setVisible(false);
         inputStream.close();  
     }
 }

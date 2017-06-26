@@ -176,7 +176,7 @@ public class ReasonforAbsent extends javax.swing.JFrame {
         try {
             // TODO add your handling code here:
             this.setVisible(false);
-            SalaryCondition condition = new SalaryCondition(this.sessionUser, this.employeePages);
+            SalaryConditionView condition = new SalaryConditionView(this.sessionUser, this.employeePages);
             condition.setTitle("DSL Time Logging | Salary Condition");
             condition.pack();
             condition.setLocationRelativeTo(null);
@@ -221,7 +221,7 @@ public class ReasonforAbsent extends javax.swing.JFrame {
                         JOptionPane.showMessageDialog(panel, "Add Absence Completed", "Success", JOptionPane.INFORMATION_MESSAGE);
                         DB.setUserLogStatus(sessionUser.getEmployeeID(),"Save", "Add Reason For Absent");
                         this.setVisible(false);
-                        SalaryCondition condition = new SalaryCondition(this.sessionUser, this.employeePages);
+                        SalaryConditionView condition = new SalaryConditionView(this.sessionUser, this.employeePages);
                         condition.setTitle("DSL Time Logging | Salary Condition");
                         condition.pack();
                         condition.setLocationRelativeTo(null);

@@ -34,6 +34,7 @@ public class Verification
 
 	private Verification(Reader reader){
             m_reader = reader;
+            
             m_fmds = new Fmd[2]; //two FMDs to perform comparison
 
             final int vgap = 5;
@@ -67,16 +68,20 @@ public class Verification
                 StopCaptureThread();
             }
             else if(e.getActionCommand().equals(CaptureThread.ACT_CAPTURE)){
-                //process result
-                CaptureThread.CaptureEvent evt = (CaptureThread.CaptureEvent)e;
-                if(ProcessCaptureResult(evt)){
-                    //restart capture thread
-                    WaitForCaptureThread();
-                    StartCaptureThread();
-                }
-                else{
-                    //destroy dialog
-                    m_dlgParent.setVisible(false);
+                try {
+                    //process result
+                    CaptureThread.CaptureEvent evt = (CaptureThread.CaptureEvent)e;
+                    if(ProcessCaptureResult(evt)){
+                        //restart capture thread
+                        WaitForCaptureThread();
+                        StartCaptureThread();
+                    }
+                    else{
+                        //destroy dialog
+                        m_dlgParent.setVisible(false);
+                    }
+                } catch (UareUException ex) {
+                    Logger.getLogger(Verification.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
 	}

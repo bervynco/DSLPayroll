@@ -11,6 +11,7 @@ import java.util.logging.Logger;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import models.User;
+import models.SalaryCondition;
 
 public class Loan extends javax.swing.JFrame {
 
@@ -37,6 +38,25 @@ public class Loan extends javax.swing.JFrame {
         lblStatus.setForeground(Color.red);
         FillComboBox();
         DB.setUserLogStatus(user.getEmployeeID(),"Page Visit", "Loan");
+    }
+    public void fillFields(int conditionID, int employeeID, String name, String type) throws ClassNotFoundException, SQLException{
+        SalaryCondition condition = new SalaryCondition();
+        condition = DB.getSalaryCondition(conditionID, employeeID, "salary_condition");
+        //jComboBox2.
+        String [] dropdown = {"Loan", "Cash Advance"};
+        txtAmount.setText(Float.toString(condition.getAmount()));
+        for(int i = 0; i < employees.size(); i++){
+            if(name.equals(employees.get(i).getFirstName() + " " + employees.get(i).getLastName())){
+                jComboBox2.setSelectedIndex(i);
+            }
+        }
+        for(int k = 0; k < dropdown.length; k++){
+            if(dropdown[k].equals(type)){
+                jComboBox1.setSelectedIndex(k);
+            }
+        }
+        
+        //txtAmount.setText(Float.toString(amount));
     }
 
     /**
@@ -160,7 +180,7 @@ public class Loan extends javax.swing.JFrame {
                 if(status.equals("Successful")){
                     JOptionPane.showMessageDialog(null, "Add Loan Successful");
                     this.setVisible(false);
-                    SalaryCondition condition = new SalaryCondition(this.sessionUser, this.employeePages);
+                    SalaryConditionView condition = new SalaryConditionView(this.sessionUser, this.employeePages);
                     condition.setTitle("DSL Time Logging | Salary Condition");
                     condition.pack();
                     condition.setLocationRelativeTo(null);
@@ -192,7 +212,7 @@ public class Loan extends javax.swing.JFrame {
         try {
             // TODO add your handling code here:
             this.setVisible(false);
-            SalaryCondition condition = new SalaryCondition(this.sessionUser, this.employeePages);
+            SalaryConditionView condition = new SalaryConditionView(this.sessionUser, this.employeePages);
             condition.setTitle("DSL Time Logging | Salary Condition");
             condition.pack();
             condition.setLocationRelativeTo(null);

@@ -9,11 +9,11 @@ import java.util.logging.Logger;
 import javax.swing.JFrame;
 import models.User;
 
-public class SalaryCondition extends javax.swing.JFrame {
+public class SalaryConditionView extends javax.swing.JFrame {
 
     private static User sessionUser = null;
     private static ArrayList<String> employeePages = new ArrayList<String>();
-    public SalaryCondition(User user, ArrayList<String> employeePages) throws ClassNotFoundException, SQLException, ParseException {
+    public SalaryConditionView(User user, ArrayList<String> employeePages) throws ClassNotFoundException, SQLException, ParseException {
         initComponents();
         this.sessionUser = user;
         this.employeePages = employeePages;
@@ -122,11 +122,11 @@ public class SalaryCondition extends javax.swing.JFrame {
             //menu.setUndecorated(true);
             main.setVisible(true);
         } catch (SQLException ex) {
-            Logger.getLogger(SalaryCondition.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(SalaryConditionView.class.getName()).log(Level.SEVERE, null, ex);
         } catch (ClassNotFoundException ex) {
-            Logger.getLogger(SalaryCondition.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(SalaryConditionView.class.getName()).log(Level.SEVERE, null, ex);
         } catch (ParseException ex) {
-            Logger.getLogger(SalaryCondition.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(SalaryConditionView.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_jButton6ActionPerformed
 
@@ -141,11 +141,11 @@ public class SalaryCondition extends javax.swing.JFrame {
             loan.setDefaultCloseOperation(0);
             loan.setVisible(true);
         } catch (ClassNotFoundException ex) {
-            Logger.getLogger(SalaryCondition.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(SalaryConditionView.class.getName()).log(Level.SEVERE, null, ex);
         } catch (SQLException ex) {
-            Logger.getLogger(SalaryCondition.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(SalaryConditionView.class.getName()).log(Level.SEVERE, null, ex);
         } catch (ParseException ex) {
-            Logger.getLogger(SalaryCondition.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(SalaryConditionView.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_jButton2ActionPerformed
 
@@ -160,11 +160,11 @@ public class SalaryCondition extends javax.swing.JFrame {
             rfa.setDefaultCloseOperation(0);
             rfa.setVisible(true);
         } catch (ClassNotFoundException ex) {
-            Logger.getLogger(SalaryCondition.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(SalaryConditionView.class.getName()).log(Level.SEVERE, null, ex);
         } catch (ParseException ex) {
-            Logger.getLogger(SalaryCondition.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(SalaryConditionView.class.getName()).log(Level.SEVERE, null, ex);
         } catch (SQLException ex) {
-            Logger.getLogger(SalaryCondition.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(SalaryConditionView.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_jButton3ActionPerformed
 
@@ -179,11 +179,11 @@ public class SalaryCondition extends javax.swing.JFrame {
             allowance.setDefaultCloseOperation(0);
             allowance.setVisible(true);
         } catch (ClassNotFoundException ex) {
-            Logger.getLogger(SalaryCondition.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(SalaryConditionView.class.getName()).log(Level.SEVERE, null, ex);
         } catch (SQLException ex) {
-            Logger.getLogger(SalaryCondition.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(SalaryConditionView.class.getName()).log(Level.SEVERE, null, ex);
         } catch (ParseException ex) {
-            Logger.getLogger(SalaryCondition.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(SalaryConditionView.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_jButton4ActionPerformed
 
@@ -198,11 +198,11 @@ public class SalaryCondition extends javax.swing.JFrame {
             holiday.setDefaultCloseOperation(0);
             holiday.setVisible(true);
         } catch (ClassNotFoundException ex) {
-            Logger.getLogger(SalaryCondition.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(SalaryConditionView.class.getName()).log(Level.SEVERE, null, ex);
         } catch (SQLException ex) {
-            Logger.getLogger(SalaryCondition.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(SalaryConditionView.class.getName()).log(Level.SEVERE, null, ex);
         } catch (ParseException ex) {
-            Logger.getLogger(SalaryCondition.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(SalaryConditionView.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_jButton1ActionPerformed
 

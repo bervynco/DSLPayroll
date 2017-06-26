@@ -36,11 +36,24 @@ public class Login extends javax.swing.JFrame {
      * Creates new form Login
      */
     private final JPanel panel = new JPanel();
-    public Login() {
+    DB db = new DB();
+    public Login() throws ClassNotFoundException, SQLException {
         
         initComponents();
         lblStatus.setFont(new Font("Serif", Font.PLAIN, 26));
         lblStatus.setHorizontalAlignment(JLabel.CENTER);
+        try {
+            // TODO add your handling code here:
+            m_collection = UareUGlobal.GetReaderCollection();
+        } catch (UareUException ex) {
+            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        m_reader = Selection.Select(m_collection);
+        
+        
+        // db.setReader(m_reader);
+        //Reader m_reader = SelectedReader
         //lblOr.setHorizontalAlignment(JLabel.CENTER);
         
     }
@@ -60,7 +73,6 @@ public class Login extends javax.swing.JFrame {
         jButton1 = new javax.swing.JButton();
         jLabel1 = new javax.swing.JLabel();
         label2 = new java.awt.Label();
-        btn_ScanReader = new javax.swing.JButton();
         btn_capture = new javax.swing.JButton();
         lblStatus = new javax.swing.JLabel();
         btnAlternativeLogin = new javax.swing.JButton();
@@ -76,14 +88,6 @@ public class Login extends javax.swing.JFrame {
 
         label2.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
         label2.setText("Please place your finger on the scanner!");
-
-        btn_ScanReader.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
-        btn_ScanReader.setText("Scan for FingerPrint Reader");
-        btn_ScanReader.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btn_ScanReaderActionPerformed(evt);
-            }
-        });
 
         btn_capture.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
         btn_capture.setText("Start Capturing Fingerprint");
@@ -111,20 +115,22 @@ public class Login extends javax.swing.JFrame {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(lblStatus, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addComponent(lblStatus, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(btn_capture, javax.swing.GroupLayout.PREFERRED_SIZE, 277, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(73, 73, 73))
             .addComponent(jLabel1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap(53, Short.MAX_VALUE)
-                .addComponent(label2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(47, 47, 47))
-            .addGroup(layout.createSequentialGroup()
-                .addGap(75, 75, 75)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(btn_capture, javax.swing.GroupLayout.DEFAULT_SIZE, 277, Short.MAX_VALUE)
-                    .addComponent(btn_ScanReader, javax.swing.GroupLayout.DEFAULT_SIZE, 277, Short.MAX_VALUE)
-                    .addComponent(btnAlternativeLogin, javax.swing.GroupLayout.DEFAULT_SIZE, 277, Short.MAX_VALUE))
-                .addGap(0, 0, Short.MAX_VALUE))
-            .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addComponent(label2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(47, 47, 47))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addComponent(btnAlternativeLogin, javax.swing.GroupLayout.PREFERRED_SIZE, 277, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(73, 73, 73))))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -132,38 +138,24 @@ public class Login extends javax.swing.JFrame {
                 .addComponent(jLabel1)
                 .addGap(29, 29, 29)
                 .addComponent(label2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(lblStatus, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(29, 29, 29)
-                .addComponent(btn_ScanReader, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(lblStatus, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(40, 40, 40)
+                        .addComponent(btn_capture, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addGap(18, 18, 18)
-                .addComponent(btn_capture, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 9, Short.MAX_VALUE)
                 .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGap(18, 18, 18)
                 .addComponent(btnAlternativeLogin, javax.swing.GroupLayout.PREFERRED_SIZE, 41, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap())
+                .addContainerGap(92, Short.MAX_VALUE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
     
-    private void btn_ScanReaderActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_ScanReaderActionPerformed
-        try {
-            // TODO add your handling code here:
-            m_collection = UareUGlobal.GetReaderCollection();
-        } catch (UareUException ex) {
-            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
-        }
-
-        m_reader = Selection.Select(m_collection);
-        SelectedReader sr = new SelectedReader();
-        sr.setM_reader(m_reader);
-        //Reader m_reader = SelectedReader
-    }//GEN-LAST:event_btn_ScanReaderActionPerformed
-
     private void btn_captureActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_captureActionPerformed
-        // TODO add your handling code here:
         Capture.Run(m_reader, false);
         FingerPrint fingerPrint = new FingerPrint();
         byte[] fingerPrintImage = fingerPrint.getFingerPrintImage();
@@ -178,7 +170,7 @@ public class Login extends javax.swing.JFrame {
                     menu.setTitle("DSL Time Logging | Menu");
                     menu.pack();
                     menu.setLocationRelativeTo(null);
-                    menu.setExtendedState(JFrame.MAXIMIZED_BOTH); 
+                    menu.setExtendedState(JFrame.MAXIMIZED_BOTH);
                     //menu.setUndecorated(true);
                     menu.setVisible(true);
                     
@@ -191,7 +183,7 @@ public class Login extends javax.swing.JFrame {
             else{
                 JOptionPane.showMessageDialog(panel, "Unauthorized", "Error", JOptionPane.ERROR_MESSAGE);
             }
-
+            
         } catch (ClassNotFoundException ex) {
             Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
         } catch (SQLException ex) {
@@ -247,18 +239,23 @@ public class Login extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                Login login = new Login();
-                login.setTitle("DSL Time Logging | Login");
-                login.pack();
-                login.setLocationRelativeTo(null);
-                login.setVisible(true);
+                try {
+                    Login login = new Login();
+                    login.setTitle("DSL Time Logging | Login");
+                    login.pack();
+                    login.setLocationRelativeTo(null);
+                    login.setVisible(true);
+                } catch (ClassNotFoundException ex) {
+                    Logger.getLogger(Login.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (SQLException ex) {
+                    Logger.getLogger(Login.class.getName()).log(Level.SEVERE, null, ex);
+                }
             }
         });
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnAlternativeLogin;
-    private javax.swing.JButton btn_ScanReader;
     private javax.swing.JButton btn_capture;
     private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;

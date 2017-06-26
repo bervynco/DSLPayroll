@@ -23,6 +23,7 @@ import models.UserLogs;
 import models.Notes;
 import models.PayrollDetails;
 import models.Reports;
+import models.SalaryItems;
 import models.Uploads;
 /**
  *
@@ -118,10 +119,19 @@ public class Main extends javax.swing.JFrame {
             model.addColumn("Total Salary");
             
             for(int i = 0; i < payrollDetails.size(); i++){
-                Object [] rowData = {payrollDetails.get(i).getEmployeeID(), payrollDetails.get(i).getEmployeeName(), payrollDetails.get(i).getRate(), 
-                    payrollDetails.get(i).getSssDeduction(), payrollDetails.get(i).getPagibigDeduction(),payrollDetails.get(i).getPhilHealthDeduction(),
-                    payrollDetails.get(i).getBonus(),payrollDetails.get(i).getCashAdvance(), payrollDetails.get(i).getLoan(), payrollDetails.get(i).getDays(), 
-                    payrollDetails.get(i).getOverTime(), payrollDetails.get(i).getTaxDeduction(), payrollDetails.get(i).getTotalSalary()};
+                Object [] rowData = {payrollDetails.get(i).getEmployeeID(), 
+                    payrollDetails.get(i).getEmployeeName(), 
+                    payrollDetails.get(i).getRate(), 
+                    payrollDetails.get(i).getSssDeduction(), 
+                    payrollDetails.get(i).getPagibigDeduction(),
+                    payrollDetails.get(i).getPhilHealthDeduction(),
+                    payrollDetails.get(i).getBonus(),
+                    payrollDetails.get(i).getCashAdvance(), 
+                    payrollDetails.get(i).getLoan(), 
+                    payrollDetails.get(i).getDays(), 
+                    payrollDetails.get(i).getOverTime(), 
+                    payrollDetails.get(i).getTaxDeduction(), 
+                    payrollDetails.get(i).getTotalSalary()};
                 model.addRow(rowData);
             }
         }
@@ -145,22 +155,47 @@ public class Main extends javax.swing.JFrame {
         else if(currentMenu.equals("Reports")){
             List<Reports> reports = new ArrayList<Reports>();
             reports = DB.getAllReports();
-            model.addColumn("FileID");
             model.addColumn("Employee ID");
-            model.addColumn("Name");
+            model.addColumn("Employee Name");
             model.addColumn("File Name");
             model.addColumn("File Path");
             model.addColumn("Generated Date");
             
             for(int i = 0; i < reports.size(); i++){
-                Object [] rowData = {reports.get(i).getFileID(), reports.get(i).getEmployeeID(), reports.get(i).getEmployeeName(), reports.get(i).getFileName(),
-                    reports.get(i).getFilePath(), reports.get(i).getGeneratedDate()};
+                Object [] rowData = {
+                    reports.get(i).getEmployeeID(), 
+                    reports.get(i).getEmployeeName(), 
+                    reports.get(i).getFileName(),
+                    reports.get(i).getFilePath(), 
+                    reports.get(i).getGeneratedDate()
+                };
                 model.addRow(rowData);
             }
         }
         
         else if(currentMenu.equals("Salary Conditions")){
+            List<SalaryItems> items = new ArrayList<SalaryItems>();
+            items = DB.getAllSalaryItems();
+            model.addColumn("ID");
+            model.addColumn("Employee ID");
+            model.addColumn("Employee Name");
+            model.addColumn("Type");
+            model.addColumn("Amount");
+            model.addColumn("Claim Date");
+            model.addColumn("Condition Type");
             
+            for(int i = 0; i < items.size(); i++){
+                Object [] rowData = {
+                    items.get(i).getId(),
+                    items.get(i).getEmployeeID(),
+                    items.get(i).getEmployeeName(),
+                    items.get(i).getType(),
+                    items.get(i).getAmount(),
+                    items.get(i).getClaimDate(),
+                    items.get(i).getConditionType()
+                };
+                model.addRow(rowData);
+            }
         }
         else if(currentMenu.equals("Upload Document")){
             List<Uploads> uploads = new ArrayList<Uploads>();
@@ -226,7 +261,6 @@ public class Main extends javax.swing.JFrame {
                     menuNotes.setVisible(true);
                 }
                 else if(Pattern.compile(Pattern.quote(pages[i]), Pattern.CASE_INSENSITIVE).matcher("btnUpload").find()){
-                    System.out.println("Upload");
                     //btnUpload.setVisible(true);
                 }
                 else;
@@ -245,6 +279,9 @@ public class Main extends javax.swing.JFrame {
         this.FillEmployeesComboBox();
         this.filterView(user.getEmployeeID(), user);
         employeeName.setText(this.sessionUser.getFirstName() + " " + this.sessionUser.getLastName());
+        btnEdit.setVisible(false);
+        btnAdd.setVisible(true);
+        btnDelete.setVisible(false);
     }
     public Main(User user, ArrayList<String> employeePages, String currentMenu) throws SQLException, ClassNotFoundException, ParseException {
         initComponents();
@@ -255,6 +292,9 @@ public class Main extends javax.swing.JFrame {
         tableList.setModel(model);
         this.FillEmployeesComboBox();
         employeeName.setText(this.sessionUser.getFirstName() + " " + this.sessionUser.getLastName());
+        btnEdit.setVisible(false);
+        btnAdd.setVisible(true);
+        btnDelete.setVisible(false);
     }
 
     /**
@@ -540,7 +580,7 @@ public class Main extends javax.swing.JFrame {
         }
         else if(this.currentMenu.equals("Salary Conditions")){
             try {
-                SalaryCondition condition = new SalaryCondition(this.sessionUser, employeePages);
+                SalaryConditionView condition = new SalaryConditionView(this.sessionUser, employeePages);
                 condition.setTitle("DSL Time Logging | Salary Condition");
                 condition.pack();
                 condition.setLocationRelativeTo(null);
@@ -612,11 +652,14 @@ public class Main extends javax.swing.JFrame {
                 int returnValue = fileChooser.showOpenDialog(null);
                 if (returnValue == JFileChooser.APPROVE_OPTION) {
                     selectedFile = fileChooser.getSelectedFile();
-                    System.out.println(selectedFile.getAbsolutePath());
                 }
                 
                 ExcelParser parser = new ExcelParser(this.sessionUser, employeePages);
                 parser.parseExcel(selectedFile);
+                DefaultTableModel model = this.FillTable(this.currentMenu);
+                tableList.setModel(model);
+                
+                
             } catch (IOException ex) {
                 Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
             } catch (ParseException ex) {
@@ -925,6 +968,57 @@ public class Main extends javax.swing.JFrame {
                 Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
             } catch (ParseException ex) {
                 Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        else if(this.currentMenu.equals("Salary Conditions")){
+            int id = (int) tableList.getValueAt(row, 0);
+            int employeeID = (int) tableList.getValueAt(row,1);
+            String type = (String) tableList.getValueAt(row,3);
+            String name = (String) tableList.getValueAt(row,2);
+            String conditionType = (String) tableList.getValueAt(row, 6);
+            
+            
+            if(conditionType.equals("Deductables")){
+                try {
+                    Loan loan = new Loan(this.sessionUser, this.employeePages);
+                    loan.fillFields(id, employeeID, name, type);
+                    loan.setTitle("DSL Time Logging | Salary Condition");
+                    loan.pack();
+                    loan.setLocationRelativeTo(null);
+                    loan.setDefaultCloseOperation(0);
+                    loan.setVisible(true);
+//                if(type.equals("Loan")){
+//                    
+//                }
+//                else if(type.equals("Cash Advance")){
+//                    
+//                }
+//                else;
+                } catch (ClassNotFoundException ex) {
+                    Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (SQLException ex) {
+                    Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (ParseException ex) {
+                    Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+            else if(conditionType.equals("Extra")){
+                try {
+                    Allowance allowance = new Allowance(this.sessionUser, this.employeePages);
+                    allowance.fillFields(id, employeeID, name, type);
+                    allowance.setTitle("DSL Time Logging | Allowance");
+                    allowance.pack();
+                    allowance.setLocationRelativeTo(null);
+                    allowance.setDefaultCloseOperation(0);
+                    allowance.setVisible(true);
+                } catch (ClassNotFoundException ex) {
+                    Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (SQLException ex) {
+                    Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (ParseException ex) {
+                    Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                    
             }
         }
         else;

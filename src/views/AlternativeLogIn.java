@@ -170,13 +170,19 @@ public class AlternativeLogIn extends javax.swing.JFrame {
     }//GEN-LAST:event_btnLoginActionPerformed
 
     private void btnCancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelActionPerformed
-        // TODO add your handling code here:
-        this.setVisible(false);
-        Login login = new Login();
-        login.setTitle("DSL Time Logging | Log In");
-        login.pack();
-        login.setLocationRelativeTo(null);
-        login.setVisible(true);
+        try {
+            // TODO add your handling code here:
+            this.setVisible(false);
+            Login login = new Login();
+            login.setTitle("DSL Time Logging | Log In");
+            login.pack();
+            login.setLocationRelativeTo(null);
+            login.setVisible(true);
+        } catch (ClassNotFoundException ex) {
+            Logger.getLogger(AlternativeLogIn.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (SQLException ex) {
+            Logger.getLogger(AlternativeLogIn.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }//GEN-LAST:event_btnCancelActionPerformed
 
     /**

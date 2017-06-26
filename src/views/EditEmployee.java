@@ -958,7 +958,7 @@ public class EditEmployee extends javax.swing.JFrame {
                 
                 
                 
-                if(fingerPrintImage == null || address.equals("") || firstName.equals("") || lastName.equals("") || timeIn.equals("") || timeOut.equals("") || role.equals("") || employeeID == 0 || rate == 0 || password.equals("")){
+                if(address.equals("") || firstName.equals("") || lastName.equals("") || timeIn.equals("") || timeOut.equals("") || role.equals("") || employeeID == 0 || rate == 0 || password.equals("")){
                     JOptionPane.showMessageDialog(panel, "Please complete fields before proceeding", "Error", JOptionPane.ERROR_MESSAGE);
                 }
                 else{

@@ -10,6 +10,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import models.SalaryCondition;
 import models.User;
 
 public class Allowance extends javax.swing.JFrame {
@@ -35,7 +36,23 @@ public class Allowance extends javax.swing.JFrame {
         FillComboBox();
         DB.setUserLogStatus(user.getEmployeeID(), "Page Visit", "Allowance");
     }
-
+    public void fillFields(int conditionID, int employeeID, String name, String type) throws ClassNotFoundException, SQLException{
+        SalaryCondition condition = new SalaryCondition();
+        condition = DB.getSalaryCondition(conditionID, employeeID, "salary_extra");
+        //jComboBox2.
+        txtAmount.setText(Float.toString(condition.getAmount()));
+        String[] dropdown = {"Bonus", "Allowance"};
+        for(int i = 0; i < employees.size(); i++){
+            if(name.equals(employees.get(i).getFirstName() + " " + employees.get(i).getLastName())){
+                jComboBox2.setSelectedIndex(i);
+            }
+        }
+        for(int k = 0; k < dropdown.length; k++){
+            if(dropdown[k].equals(type)){
+                jComboBox1.setSelectedIndex(k);
+            }
+        }
+    }
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -155,7 +172,7 @@ public class Allowance extends javax.swing.JFrame {
                     JOptionPane.showMessageDialog(null, "Add Allowance Successful");
                     System.out.println("Successful");
                     this.setVisible(false);
-                    SalaryCondition condition = new SalaryCondition(this.sessionUser, this.employeePages);
+                    SalaryConditionView condition = new SalaryConditionView(this.sessionUser, this.employeePages);
                     condition.setTitle("DSL Time Logging | Salary Condition");
                     condition.pack();
                     condition.setLocationRelativeTo(null);
@@ -183,9 +200,9 @@ public class Allowance extends javax.swing.JFrame {
     private void btnCancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelActionPerformed
         // TODO add your handling code here:
         this.setVisible(false);
-        SalaryCondition condition;
+        SalaryConditionView condition;
         try {
-            condition = new SalaryCondition(this.sessionUser, this.employeePages);
+            condition = new SalaryConditionView(this.sessionUser, this.employeePages);
             condition.setTitle("DSL Time Logging | Salary Condition");
             condition.pack();
             condition.setLocationRelativeTo(null);

@@ -5,7 +5,6 @@
  */
 package views;
 
-import static com.itextpdf.text.Annotation.FILE;
 import java.util.Date;
 import java.io.FileOutputStream;
 import java.sql.SQLException;
@@ -13,7 +12,6 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 import com.itextpdf.text.Anchor;
-import com.itextpdf.text.BadElementException;
 import com.itextpdf.text.BaseColor;
 import com.itextpdf.text.Chapter;
 import com.itextpdf.text.Chunk;
@@ -21,7 +19,6 @@ import com.itextpdf.text.Document;
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.Element;
 import com.itextpdf.text.Font;
-import com.itextpdf.text.ListItem;
 import com.itextpdf.text.Paragraph;
 import com.itextpdf.text.Phrase;
 import com.itextpdf.text.Section;
@@ -31,7 +28,6 @@ import com.itextpdf.text.pdf.PdfWriter;
 import controllers.DB;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import models.Absence;
 import models.Attendance;
 import models.PayrollDetails;
@@ -62,6 +58,9 @@ public class GenerateReport {
             Document document = new Document();
             DateFormat df = new SimpleDateFormat("dd-MM-yy-HHmmss");
             Date dateobj = new Date();
+            String fileName =  reportType + '-' + reportItem + '-' + df.format(dateobj) + ".pdf";
+            String filePath = "C:/PDF/" + fileName;
+            
             PdfWriter.getInstance(document, new FileOutputStream("C:/PDF/" + reportType + '-' + reportItem + '-' + df.format(dateobj) + ".pdf"));
             document.open();
             addTitlePage(document);
@@ -76,7 +75,7 @@ public class GenerateReport {
             else{
                 addContentBoth(document, users, reportType, startDate, endDate, employeeID);
             }  
-            
+            DB.saveReport(employeeID, fileName, filePath);
             document.close();
         } catch (Exception e) {
             e.printStackTrace();
@@ -116,6 +115,7 @@ public class GenerateReport {
         Paragraph subPara = null;
         
         if(employeeID == 0){
+            System.out.println("GET ALL ATTENDANCE");
             for(int i = 0; i < user.size(); i++){
                 PdfPTable tableAttendance = new PdfPTable(3);
                 PdfPCell c1 = new PdfPCell(new Phrase("Date Log"));
@@ -128,11 +128,11 @@ public class GenerateReport {
                 c1.setVerticalAlignment(Element.ALIGN_MIDDLE);
                 tableAttendance.addCell(c1);
 
-                c1 = new PdfPCell(new Phrase("Time out"));
-                c1.setHorizontalAlignment(Element.ALIGN_CENTER);
-                c1.setVerticalAlignment(Element.ALIGN_MIDDLE);
-                tableAttendance.addCell(c1);
-                tableAttendance.setHeaderRows(1);
+//                c1 = new PdfPCell(new Phrase("Time out"));
+//                c1.setHorizontalAlignment(Element.ALIGN_CENTER);
+//                c1.setVerticalAlignment(Element.ALIGN_MIDDLE);
+//                tableAttendance.addCell(c1);
+//                tableAttendance.setHeaderRows(1);
 
                 PdfPTable tableAbsence = new PdfPTable(2);
                 PdfPCell c2 = new PdfPCell(new Phrase("Absence Date"));
@@ -157,7 +157,8 @@ public class GenerateReport {
                 Paragraph headerTwo = new Paragraph();
                 headerTwo.setAlignment(Element.ALIGN_CENTER);
                 headerTwo.add(new Paragraph("Absence", subFont));
-
+                
+                
                 attendance = DB.getReportAttendance(startDate, endDate, user.get(i).getEmployeeID());
                 
                 absence = DB.getAbsentDate(startDate, endDate, user.get(i).getEmployeeID());
@@ -198,6 +199,7 @@ public class GenerateReport {
             }
         }
         else{
+            System.out.println("GET SPECIFIC ATTENDANCE");
             PdfPTable tableAttendance = new PdfPTable(3);
             PdfPCell c1 = new PdfPCell(new Phrase("Date Log"));
             c1.setHorizontalAlignment(Element.ALIGN_CENTER);
@@ -209,11 +211,11 @@ public class GenerateReport {
             c1.setVerticalAlignment(Element.ALIGN_MIDDLE);
             tableAttendance.addCell(c1);
 
-            c1 = new PdfPCell(new Phrase("Time out"));
-            c1.setHorizontalAlignment(Element.ALIGN_CENTER);
-            c1.setVerticalAlignment(Element.ALIGN_MIDDLE);
-            tableAttendance.addCell(c1);
-            tableAttendance.setHeaderRows(1);
+//            c1 = new PdfPCell(new Phrase("Time out"));
+//            c1.setHorizontalAlignment(Element.ALIGN_CENTER);
+//            c1.setVerticalAlignment(Element.ALIGN_MIDDLE);
+//            tableAttendance.addCell(c1);
+//            tableAttendance.setHeaderRows(1);
             
             PdfPTable tableAbsence = new PdfPTable(2);
             PdfPCell c2 = new PdfPCell(new Phrase("Absence Date"));
@@ -295,7 +297,7 @@ public class GenerateReport {
         Chapter catPart = new Chapter(new Paragraph(anchor), 1);
         Section subCatPart = null;
         Paragraph subPara = null;
-        
+       
         if(employeeID == 0){
             for(int i = 0; i < user.size(); i++){
                 PdfPTable tablePayroll = new PdfPTable(12);

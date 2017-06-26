@@ -152,7 +152,7 @@ public class Holiday extends javax.swing.JFrame {
                     DB.setUserLogStatus(sessionUser.getEmployeeID(),"Save", "Add New Holiday");
                     JOptionPane.showMessageDialog(panel, "Add Holiday Completed", "Success", JOptionPane.INFORMATION_MESSAGE);
                     this.setVisible(false);
-                    SalaryCondition condition = new SalaryCondition(this.sessionUser, this.employeePages);
+                    SalaryConditionView condition = new SalaryConditionView(this.sessionUser, this.employeePages);
                     condition.setTitle("DSL Time Logging | Salary Condition");
                     condition.pack();
                     condition.setLocationRelativeTo(null);
@@ -182,7 +182,7 @@ public class Holiday extends javax.swing.JFrame {
         try {
             // TODO add your handling code here:
             this.setVisible(false);
-            SalaryCondition condition = new SalaryCondition(this.sessionUser, this.employeePages);
+            SalaryConditionView condition = new SalaryConditionView(this.sessionUser, this.employeePages);
             condition.setTitle("DSL Time Logging | Salary Condition");
             condition.pack();
             condition.setLocationRelativeTo(null);

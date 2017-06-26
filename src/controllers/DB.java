@@ -5,8 +5,10 @@
  */
 package controllers;
 
+import UareUFunctions.*;
 import com.digitalpersona.uareu.Engine;
 import com.digitalpersona.uareu.Fmd;
+import com.digitalpersona.uareu.Reader;
 import com.digitalpersona.uareu.UareUException;
 import com.digitalpersona.uareu.UareUGlobal;
 import com.mysql.jdbc.Connection;
@@ -41,6 +43,8 @@ import models.Notes;
 import models.PayrollClass;
 import models.PayrollDetails;
 import models.Reports;
+import models.SalaryCondition;
+import models.SalaryItems;
 import models.Uploads;
 import models.User;
 import models.UserLogs;
@@ -73,6 +77,80 @@ public class DB {
        conn = (Connection) DriverManager.getConnection(url, user, pass);
        
        return conn;
+    }
+    
+    public static void setReader(Reader reader) throws ClassNotFoundException, SQLException{
+        Connection c = connect();
+        
+        PreparedStatement ps = c.prepareStatement("INSERT INTO reader(reader, active) VALUES(?,?)");
+        ps.setBlob(1, (Blob) reader);
+        ps.setInt(2, 1);
+        int rows = ps.executeUpdate();
+    }
+    
+    
+    public static Reader getReader() throws ClassNotFoundException, SQLException{
+        Reader m_reader = null;
+        Connection c = connect();
+        PreparedStatement ps = c.prepareStatement("SELECT reader from reader where active = 1");
+        ResultSet rs = ps.executeQuery();
+        
+        while(rs.next()){
+            m_reader = (Reader) rs.getBlob(1);
+        }
+        return m_reader;
+    }
+    public static User loginFingerPrint(byte[] fingerPrintImage) throws ClassNotFoundException, SQLException, UareUException, ParseException{
+        String role = "";
+        User user = new User();
+        Connection c = connect();
+        PreparedStatement ps = c.prepareStatement("Select employeeID as 'EmployeeID', firstName as 'FirstName', lastName as 'LastName'," + 
+                " address as 'Address', telephoneNumber as 'TelephoneNumber', mobileNumber as 'MobileNumber', rate, timeIn, timeOut, role,"+
+                " fingerPrint, password, pages, noLates, noMemos, noAbsences from users");
+        
+        ResultSet rs = ps.executeQuery();
+        while (rs.next()) {
+            
+            byte[] fingerPrint  = rs.getBytes(11);
+            Engine engine = UareUGlobal.GetEngine();
+            
+            
+            if(fingerPrint.length != 0){
+                Fmd fmd1 = UareUGlobal.GetImporter().ImportFmd(fingerPrint, Fmd.Format.ANSI_378_2004, Fmd.Format.ANSI_378_2004);
+                Fmd fmd2 = UareUGlobal.GetImporter().ImportFmd(fingerPrintImage, Fmd.Format.ANSI_378_2004, Fmd.Format.ANSI_378_2004);
+
+                int falsematch_rate = engine.Compare(fmd1, 0, fmd2, 0);
+
+
+                int target_falsematch_rate = Engine.PROBABILITY_ONE / 100000; //target rate is 0.00001
+
+                if(falsematch_rate < target_falsematch_rate){
+                    user.setEmployeeID(rs.getInt(1));
+                    user.setFirstName(rs.getString(2));
+                    user.setLastName(rs.getString(3));
+                    user.setAddress(rs.getString(4));
+                    user.setTelephoneNumber(rs.getString(5));
+                    user.setMobileNumber(rs.getString(6));
+                    user.setRate(rs.getFloat(7));
+                    user.setTimeIn(rs.getString(8));
+                    user.setTimeOut(rs.getString(9));
+                    role = rs.getString(10);
+                    user.setRole(role);
+                    user.setFingerPrintImage(rs.getBytes(11));
+                    user.setPassword(rs.getString(12));
+                    user.setPages(rs.getString(13));
+                    user.setNoLates(rs.getInt(14));
+                    user.setNoMemos(rs.getInt(15));
+                    user.setNoAbsences(rs.getInt(16));
+                    
+                    break;
+                }
+            }
+            
+            
+        }
+        c.close();
+        return user;
     }
     public static List<User> getUsers() throws SQLException, ClassNotFoundException{
         List<User> employees = new ArrayList<User>();
@@ -177,6 +255,15 @@ public class DB {
         c.close();
         return logs;
     }
+    public static void saveReport(int employeeID, String fileName, String filePath) throws ClassNotFoundException, SQLException{
+        Connection c = connect();
+        PreparedStatement ps = c.prepareStatement("INSERT INTO reports(employeeID, fileName, filePath) VALUES (?,?,?)");
+        ps.setInt(1, employeeID);
+        ps.setString(2, fileName);
+        ps.setString(3, filePath);
+        
+        int rows = ps.executeUpdate();
+    }
     public static List<Reports> getAllReports() throws ClassNotFoundException, SQLException, ParseException{
         Connection c = connect();
         Date date = new Date();
@@ -184,17 +271,29 @@ public class DB {
         cal.setTime(date);
         int year = cal.get(Calendar.YEAR);
         List<Reports> reportList = new ArrayList<Reports>();
-        PreparedStatement ps = c.prepareStatement("SELECT a.employeeID, concat(b.firstName, ' ', b.lastName) as 'Name', a.fileName, a.filePath, a.generatedDate"+
-                        " FROM reports a, users b where a.employeeID = b.employeeID and year(a.generatedDate) = ?  ORDER BY a.generatedDate DESC");
+        PreparedStatement ps = c.prepareStatement("SELECT a.employeeID, a.fileName, a.filePath, a.generatedDate"+
+                        " FROM reports a where year(a.generatedDate) = ?  ORDER BY a.generatedDate DESC");
         ps.setInt(1, year);
         ResultSet rs = ps.executeQuery();
         while(rs.next()){
             Reports reports = new Reports();
+            String employeeName = null;
+            if(rs.getInt(1) == 0){
+                employeeName = "Generate All";
+                
+            }
+            else{
+                PreparedStatement ps2 = c.prepareStatement("Select Concat(firstName, ' ', lastName) from users where employeeID = ?");
+                ps2.setInt(1, rs.getInt(1));
+                ResultSet rsName = ps2.executeQuery();
+                rsName.first();
+                employeeName = rsName.getString(1);
+            }
             reports.setEmployeeID(rs.getInt(1));
-            reports.setEmployeeName(rs.getString(2));
-            reports.setFileName(rs.getString(3));
-            reports.setFilePath(rs.getString(4));
-            reports.setGeneratedDate(rs.getTimestamp(5));
+            reports.setEmployeeName(employeeName);
+            reports.setFileName(rs.getString(2));
+            reports.setFilePath(rs.getString(3));
+            reports.setGeneratedDate(rs.getTimestamp(4));
             reportList.add(reports);
         }
         c.close();
@@ -646,7 +745,7 @@ public class DB {
         
         // end of get date min max
         //get holiday
-            PreparedStatement psHoliday = c.prepareStatement("Select count(*) from holiday where holidayDate between "+ startDate +" AND " + endDate+ ";");
+            PreparedStatement psHoliday = c.prepareStatement("Select count(*) from holiday where holidayDate BETWEEN "+ startDate +" AND " + endDate+ ";");
             ResultSet rsHoliday = psHoliday.executeQuery();
             int holidayCount = 0;
             rsHoliday.first();
@@ -709,7 +808,7 @@ public class DB {
             ps2.setFloat(8, bonus);
             ps2.setFloat(9, cashAdvance);
             ps2.setFloat(10, loan);
-            ps2.setFloat(11, attendanceCount - holidayCount);
+            ps2.setFloat(11, attendanceCount);
             ps2.setFloat(12, 0);
             ps2.setFloat(13, totalSalary);
             ps2.executeUpdate();
@@ -749,12 +848,13 @@ public class DB {
             payroll.setRate(rs.getFloat(3));
             payroll.setSssDeduction(rs.getFloat(4));
             payroll.setPhilHealthDeduction(rs.getFloat(5));
-            payroll.setTaxDeduction(rs.getFloat(6));
-            payroll.setBonus(rs.getFloat(7));
-            payroll.setCashAdvance(rs.getFloat(8));
-            payroll.setLoan(rs.getFloat(9));
-            payroll.setDays(rs.getInt(10));
-            payroll.setOverTime(rs.getInt(11));
+            payroll.setPagibigDeduction(rs.getFloat(6));
+            payroll.setTaxDeduction(rs.getFloat(7));
+            payroll.setBonus(rs.getFloat(8));
+            payroll.setCashAdvance(rs.getFloat(9));
+            payroll.setLoan(rs.getFloat(10));
+            payroll.setDays(rs.getInt(11));
+            payroll.setOverTime(rs.getInt(12));
             payroll.setTotalSalary(rs.getFloat(13));
             
         }
@@ -784,6 +884,23 @@ public class DB {
         int rows = ps.executeUpdate();
 
         if(rows > 0){
+            PreparedStatement psHistory = c.prepareStatement("UPDATE payroll_history set rate = ?, sssDeduction = ?, pagibigDeduction = ?, philHealthDeduction = ?," +
+            " bonus = ?, cashAdvance = ?, loan = ?, days = ?, overTime = ?, totalSalary = ?, taxDeduction = ?, claimed = ? where employeeID = ?");
+            psHistory.setFloat(1, rate);
+            psHistory.setFloat(2, sssDeduction);
+            psHistory.setFloat(3, pagibigDeduction);
+            psHistory.setFloat(4, philHealthDeduction);
+            psHistory.setFloat(5, bonus);
+            psHistory.setFloat(6, cashAdvance);
+            psHistory.setFloat(7, loan);
+            psHistory.setInt(8, days);
+            psHistory.setFloat(9, overTime);
+            psHistory.setFloat(10, totalSalary);
+            psHistory.setFloat(11, taxDeduction);
+            psHistory.setInt(12, 1);
+            psHistory.setInt(13, employeeID);
+        
+            psHistory.executeUpdate();
             PreparedStatement ps1 = c.prepareStatement("UPDATE users set SSSDeduction = ?, pagibigDeduction = ?,"+
                     " philHealthDeduction = ?, taxDeduction = ?, rate = ? where employeeID = ?");
             ps1.setFloat(1, sssDeduction);
@@ -812,6 +929,98 @@ public class DB {
         ps.executeUpdate();
         
         c.close();
+    }
+    public static void getAllSalaryConditions() throws ClassNotFoundException, SQLException{
+        Connection c = connect();
+        PreparedStatement ps = c.prepareStatement("SELECT salary_extra.employeeID as employeeID, salary_extra.type as salaryExtraType, salary_extra.amount as salaryExtraAmount," +
+                        " salary_extra.appliedDate as salaryExtraDate, salary_condition.type as salaryConditionTypee, salary_condition.amount as salaryConditionAmount, salary_condition.appliedDate as salaryConditionDate FROM salary_extra " +
+                        "INNER JOIN salary_condition ON salary_extra.employeeID = salary_condition.employeeID where month(salary_extra.appliedDate) = ? and year(salary_extra.appliedDate) = ? and month(salary_condition.appliedDate) = ? and year(salary_condition.appliedDate) = ?;");
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(new java.sql.Date(getCurrentCalendar()));
+        int month = cal.get(Calendar.MONTH) + 1;
+        int day = cal.get(Calendar.DATE);
+        int year = cal.get(Calendar.YEAR);
+        
+        ps.setInt(1, month);
+        ps.setInt(2, year);
+        ps.setInt(3, month);
+        ps.setInt(4, year);
+        
+        
+        ResultSet rs = ps.executeQuery();
+        
+    }
+    public static List<SalaryItems> getAllSalaryItems() throws ClassNotFoundException, SQLException{
+        Connection c = connect();
+        
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(new java.sql.Date(getCurrentCalendar()));
+        int month = cal.get(Calendar.MONTH) + 1;
+        int day = cal.get(Calendar.DATE);
+        int year = cal.get(Calendar.YEAR);
+        List<SalaryItems> salaryItems = new ArrayList<SalaryItems>();
+        
+        PreparedStatement ps = c.prepareStatement("Select a.conditionID, CONCAT(b.firstName,' ', b.lastName) as 'Name', "+
+                "a.type, a.employeeID, a.amount, a.appliedDate from salary_condition a, users b where a.employeeID = b.employeeID and month(appliedDate) = ? and year(appliedDate) = ?");
+        ps.setInt(1, month);
+        ps.setInt(2, year);
+        
+        ResultSet rs = ps.executeQuery();
+        while(rs.next()){
+            SalaryItems items = new SalaryItems();
+            items.setId(rs.getInt(1));
+            items.setEmployeeName(rs.getString(2));
+            items.setType(rs.getString(3));
+            items.setEmployeeID(rs.getInt(4));
+            items.setAmount(rs.getFloat(5));
+            items.setClaimDate(rs.getDate(6));
+            items.setConditionType("Deductables");
+            salaryItems.add(items);
+        }
+        PreparedStatement ps1 = c.prepareStatement("Select a.extraID, CONCAT(b.firstName,' ', b.lastName) as 'Name', "+
+                "a.type, a.employeeID, a.amount, a.appliedDate from salary_extra a, users b where a.employeeID = b.employeeID and month(appliedDate) = ? and year(appliedDate) = ?");
+        
+        ps1.setInt(1, month);
+        ps1.setInt(2, year);
+        
+        ResultSet rs1 = ps1.executeQuery();
+        while(rs1.next()){
+            SalaryItems items = new SalaryItems();
+            items.setId(rs1.getInt(1));
+            items.setEmployeeName(rs1.getString(2));
+            items.setType(rs1.getString(3));
+            items.setEmployeeID(rs1.getInt(4));
+            items.setAmount(rs1.getFloat(5));
+            items.setClaimDate(rs1.getDate(6));
+            items.setConditionType("Extra");
+            salaryItems.add(items);
+        }
+        return salaryItems;
+    }
+    
+    public static SalaryCondition getSalaryCondition(int conditionID, int employeeID, String table) throws ClassNotFoundException, SQLException{
+        Connection c = connect();
+        SalaryCondition condition = new SalaryCondition();
+        String id = null;
+        if(table.equals("salary_condition")){
+            id = "conditionID";
+        }
+        else{
+            id = "extraID";
+        }
+        PreparedStatement ps = c.prepareStatement("Select a.employeeID, CONCAT(b.firstName,' ', b.lastName) as 'Name', a.type,"+
+                " a.amount, a.appliedDate from "+ table+ " a, users b where "+ id +" = ? and a.employeeID = b.employeeID");
+        ps.setInt(1, conditionID);
+
+        ResultSet rs = ps.executeQuery();
+        while(rs.next()){
+            condition.setEmployeeID(rs.getInt(1));
+            condition.setEmployeeName(rs.getString(2));
+            condition.setType(rs.getString(3));
+            condition.setAmount(rs.getFloat(4));
+            condition.setAppliedDate(rs.getDate(5));
+        }
+        return condition;
     }
     
     
@@ -885,8 +1094,6 @@ public class DB {
     public static Timestamp getDateToday(){
         java.util.Date utilDate = new java.util.Date();
         java.sql.Timestamp sq = new java.sql.Timestamp(utilDate.getTime());  
-
-        System.out.println(sq);
         
         SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
         return sq;
@@ -1037,31 +1244,31 @@ public class DB {
         Calendar cal2 = Calendar.getInstance();
         List<Attendance> attendanceList = new ArrayList<>();
         
-        int startMonth = 0;
-        int startDay = 0;
-        int startYear = 0;
-        int endMonth = 0;
-        int endDay = 0;
-        int endYear = 0;
-
-        DateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-        Date dateStart = format.parse(startDate);
-        Date dateEnd = format.parse(endDate);
-        cal.setTime(dateStart);
-        cal2.setTime(dateEnd);
-        startMonth = cal.get(Calendar.MONTH) + 1;
-        startDay = cal.get(Calendar.DATE);
-        startYear = cal.get(Calendar.YEAR);
-        endMonth = cal2.get(Calendar.MONTH) + 1;
-        endDay = cal2.get(Calendar.DATE);
-        endYear = cal2.get(Calendar.YEAR);
+//        int startMonth = 0;
+//        int startDay = 0;
+//        int startYear = 0;
+//        int endMonth = 0;
+//        int endDay = 0;
+//        int endYear = 0;
+//
+//        DateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+//        Date dateStart = format.parse(startDate);
+//        Date dateEnd = format.parse(endDate);
+//        cal.setTime(dateStart);
+//        cal2.setTime(dateEnd);
+//        startMonth = cal.get(Calendar.MONTH) + 1;
+//        startDay = cal.get(Calendar.DATE);
+//        startYear = cal.get(Calendar.YEAR);
+//        endMonth = cal2.get(Calendar.MONTH) + 1;
+//        endDay = cal2.get(Calendar.DATE);
+//        endYear = cal2.get(Calendar.YEAR);
         
         
         List<PayrollDetails> details = new ArrayList<>();
         
         
         PreparedStatement ps = c.prepareStatement("SELECT employeeID, rate, sssDeduction, pagibigDeduction, philHealthDeduction, bonus, cashAdvance, loan, days, overTime,"+
-                "totalSalary, taxDeduction, claimDate, claimed from payroll a where employeeID = ? and a.claimDate BETWEEN '" + startDate + "' AND '" + endDate + "';");
+                "totalSalary, taxDeduction, claimDate, claimed from payroll_history a where employeeID = ? and claimed = 1 and a.claimDate BETWEEN CAST('"+startDate+"' AS DATE) AND CAST('"+endDate+"' AS DATE);");
         ps.setInt(1, employeeID);
         
         ResultSet rs = ps.executeQuery();
@@ -1114,7 +1321,7 @@ public class DB {
         endYear = cal2.get(Calendar.YEAR);
 
         PreparedStatement ps = c.prepareStatement("SELECT a.employeeID, concat(b.firstName, ' ', b.lastName) as 'Name', a.absenceDate, a.reason"+
-                " from absence a, users b where b.employeeID = a.employeeID and a.employeeID = ? and a.absenceDate BETWEEN '" + startDate + "' AND '" + endDate + "'");
+                " from absence a, users b where b.employeeID = a.employeeID and a.employeeID = ? and a.absenceDate BETWEEN CAST('"+startDate+"' AS DATE) AND CAST('"+endDate+"' AS DATE);");
 
         ps.setInt(1, employeeID);
         ResultSet rs = ps.executeQuery();
@@ -1137,31 +1344,42 @@ public class DB {
         Calendar cal2 = Calendar.getInstance();
         List<Attendance> attendanceList = new ArrayList<>();
         
-        int startMonth = 0;
-        int startDay = 0;
-        int startYear = 0;
-        int endMonth = 0;
-        int endDay = 0;
-        int endYear = 0;
-
-        DateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-        Date dateStart = format.parse(startDate);
-        Date dateEnd = format.parse(endDate);
-        cal.setTime(dateStart);
-        cal2.setTime(dateEnd);
-        startMonth = cal.get(Calendar.MONTH) + 1;
-        startDay = cal.get(Calendar.DATE);
-        startYear = cal.get(Calendar.YEAR);
-        endMonth = cal2.get(Calendar.MONTH) + 1;
-        endDay = cal2.get(Calendar.DATE);
-        endYear = cal2.get(Calendar.YEAR);
-
+//        int startMonth = 0;
+//        int startDay = 0;
+//        int startYear = 0;
+//        int endMonth = 0;
+//        int endDay = 0;
+//        int endYear = 0;
+//
+//        DateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+//        Date dateStart = format.parse(startDate);
+//        Date dateEnd = format.parse(endDate);
+//        cal.setTime(dateStart);
+//        cal2.setTime(dateEnd);
+//        startMonth = cal.get(Calendar.MONTH) + 1;
+//        startDay = cal.get(Calendar.DATE);
+//        startYear = cal.get(Calendar.YEAR);
+//        endMonth = cal2.get(Calendar.MONTH) + 1;
+//        endDay = cal2.get(Calendar.DATE);
+//        endYear = cal2.get(Calendar.YEAR);
+    
+        System.out.println(startDate);
+        System.out.println(endDate);
         PreparedStatement ps = c.prepareStatement("SELECT a.employeeID, concat(b.firstName, ' ', b.lastName) as 'Name', a.logDate, a.timeIn,"+
-                " a.timeOut from time_logs a, users b where b.employeeID = a.employeeID and a.employeeID = ? and logDate BETWEEN '" + startDate + "' AND '" + endDate + "'");
+                " a.timeOut from time_logs a, users b where b.employeeID = a.employeeID and a.employeeID = ? and a.logDate BETWEEN CAST('"+startDate+"' AS DATE) AND CAST('"+endDate+"' AS DATE);");
+                //  + ""
+//                + ""
+//                + " '" + startDate + "' AND '" + endDate + "'");
+//BETWEEN CAST('2017-05-01' AS DATE) AND CAST('2017-05-30' AS DATE);
 
         ps.setInt(1, employeeID);
         ResultSet rs = ps.executeQuery();
         while(rs.next()){
+            System.out.println(rs.getInt(1));
+            System.out.println(rs.getString(2));
+            System.out.println(rs.getTimestamp(3));
+            System.out.println(rs.getString(4));
+            System.out.println(rs.getString(5));
             Attendance ul = new Attendance();
             ul.setEmployeeID(rs.getInt(1));
             ul.setEmployeeName(rs.getString(2));
@@ -1611,17 +1829,17 @@ public class DB {
     public static int getLogs(int employeeID, String dateStart, String dateEnd) throws ClassNotFoundException, SQLException, ParseException{
         Connection c = connect();
         int total = 0;
-        SimpleDateFormat formatter = new SimpleDateFormat("MMMM dd, yyyy");
-        SimpleDateFormat outputFormatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        //Wed Nov 30 00:00:00 CST 2016
-        Date startDate = formatter.parse(dateStart);
-        String parsedStartDate = outputFormatter.format(startDate);
-        
-        Date endDate = formatter.parse(dateEnd);
-        String parsedEndDate = outputFormatter.format(endDate);
+//        SimpleDateFormat formatter = new SimpleDateFormat("MMMM dd, yyyy");
+//        SimpleDateFormat outputFormatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+//        //Wed Nov 30 00:00:00 CST 2016
+//        Date startDate = formatter.parse(dateStart);
+//        String parsedStartDate = outputFormatter.format(startDate);
+//        
+//        Date endDate = formatter.parse(dateEnd);
+//        String parsedEndDate = outputFormatter.format(endDate);
 
-        PreparedStatement ps = c.prepareStatement("SELECT count(case when (duration != '') then 1 else null end)"+
-                " FROM dsl.time_logs where employeeID = ? and date BETWEEN '" + parsedStartDate +"' AND '"+ parsedEndDate +"';");
+        PreparedStatement ps = c.prepareStatement("SELECT count(logDate)"+
+                " FROM dsl.time_logs where employeeID = ?;"); // and date BETWEEN '" + parsedStartDate +"' AND '"+ parsedEndDate +"'
          ps.setInt(1, employeeID);
          ResultSet rs = ps.executeQuery();
          while(rs.next()){
@@ -1714,8 +1932,6 @@ public class DB {
             int target_falsematch_rate = Engine.PROBABILITY_ONE / 100000; //target rate is 0.00001
             
             if(falsematch_rate < target_falsematch_rate){
-                System.out.println(rs.getInt(1));
-                System.out.println("STATUS DUPLICATE");
                 return "Duplicate";
             }
         }
@@ -1725,52 +1941,7 @@ public class DB {
     
     
     
-    public static User loginFingerPrint(byte[] fingerPrintImage) throws ClassNotFoundException, SQLException, UareUException, ParseException{
-        String role = "";
-        User user = new User();
-        Connection c = connect();
-        PreparedStatement ps = c.prepareStatement("Select employeeID as 'EmployeeID', firstName as 'FirstName', lastName as 'LastName'," + 
-                " address as 'Address', telephoneNumber as 'TelephoneNumber', mobileNumber as 'MobileNumber', rate, timeIn, timeOut, role,"+
-                " fingerPrint, password, pages, noLates, noMemos, noAbsences from users");
-        
-        ResultSet rs = ps.executeQuery();
-        while (rs.next()) {
-            byte[] fingerPrint  = rs.getBytes(11);
-            Engine engine = UareUGlobal.GetEngine();
-            
-            
-            Fmd fmd1 = UareUGlobal.GetImporter().ImportFmd(fingerPrint, Fmd.Format.ANSI_378_2004, Fmd.Format.ANSI_378_2004);
-            Fmd fmd2 = UareUGlobal.GetImporter().ImportFmd(fingerPrintImage, Fmd.Format.ANSI_378_2004, Fmd.Format.ANSI_378_2004);
-            
-            int falsematch_rate = engine.Compare(fmd1, 0, fmd2, 0);
-
-
-            int target_falsematch_rate = Engine.PROBABILITY_ONE / 100000; //target rate is 0.00001
-            
-            if(falsematch_rate < target_falsematch_rate){
-                user.setEmployeeID(rs.getInt(1));
-                user.setFirstName(rs.getString(2));
-                user.setLastName(rs.getString(3));
-                user.setAddress(rs.getString(4));
-                user.setTelephoneNumber(rs.getString(5));
-                user.setMobileNumber(rs.getString(6));
-                user.setRate(rs.getFloat(7));
-                user.setTimeIn(rs.getString(8));
-                user.setTimeOut(rs.getString(9));
-                role = rs.getString(10);
-                user.setRole(role);
-                user.setFingerPrintImage(rs.getBytes(11));
-                user.setPassword(rs.getString(12));
-                user.setPages(rs.getString(13));
-                user.setNoLates(rs.getInt(14));
-                user.setNoMemos(rs.getInt(15));
-                user.setNoAbsences(rs.getInt(16));
-            }
-            
-        }
-        c.close();
-        return user;
-    }
+    
     public static User alternativeLogin(int employeeID, String password) throws ClassNotFoundException, SQLException, UareUException, ParseException{
         String role = "";
         User user = new User();

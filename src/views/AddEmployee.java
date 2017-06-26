@@ -5,6 +5,8 @@
  */
 package views;
 
+import UareUFunctions.Enrollment;
+import UareUFunctions.Selection;
 import com.digitalpersona.uareu.Fmd;
 import com.digitalpersona.uareu.Reader;
 import com.digitalpersona.uareu.ReaderCollection;
@@ -643,17 +645,17 @@ public class AddEmployee extends javax.swing.JFrame {
 
     private void btnScanActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnScanActionPerformed
 //        // TODO add your handling code here:
-//        try {
-//            // TODO add your handling code here:
-//            m_collection = UareUGlobal.GetReaderCollection();
-//        } catch (UareUException ex) {
-//            Logger.getLogger(AddEmployee.class.getName()).log(Level.SEVERE, null, ex);
-//        }
-//        m_reader = Selection.Select(m_collection);
-//        Enrollment.Run(m_reader);
-////        lblFingerPrintInfo.setText("Done taking fingerprint");
-//        btnScan.setVisible(false);
-//        JOptionPane.showMessageDialog(panel, "Done taking fingerprint", "Success", JOptionPane.INFORMATION_MESSAGE);
+        try {
+            // TODO add your handling code here:
+            m_collection = UareUGlobal.GetReaderCollection();
+        } catch (UareUException ex) {
+            Logger.getLogger(AddEmployee.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        m_reader = Selection.Select(m_collection);
+        Enrollment.Run(m_reader);
+//        lblFingerPrintInfo.setText("Done taking fingerprint");
+        btnScan.setVisible(false);
+        JOptionPane.showMessageDialog(panel, "Done taking fingerprint", "Success", JOptionPane.INFORMATION_MESSAGE);
     }//GEN-LAST:event_btnScanActionPerformed
 
     /**

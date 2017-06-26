@@ -1,5 +1,4 @@
-
-package dsltimeloggingsystem;
+package UareUFunctions;
 
 import UareUFunctions.ImagePanel;
 import UareUFunctions.MessageBox;
@@ -84,15 +83,14 @@ public class Capture extends JPanel implements ActionListener {
 
                     try {
                         fmd = engine.CreateFmd(evt.capture_result.image, Fmd.Format.ANSI_378_2004);
-
+                        FingerPrint fingerPrint = new FingerPrint();
+                        
+                        fingerPrint.setFingerPrintImage(fmd.getData());
+                        
+                        m_image.showImage(evt.capture_result.image);
                     } catch (UareUException ex) {
                         Logger.getLogger(Capture.class.getName()).log(Level.SEVERE, null, ex);
                     }
-                    FingerPrint fingerPrint = new FingerPrint();
-                    
-                    fingerPrint.setFingerPrintImage(fmd.getData());
-                    
-                    m_image.showImage(evt.capture_result.image);
                 }
                 else if(Reader.CaptureQuality.CANCELED == evt.capture_result.quality){
                     //capture or streaming was canceled, just quit

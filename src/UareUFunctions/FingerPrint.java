@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package dsltimeloggingsystem;
+package UareUFunctions;
 
 import com.digitalpersona.uareu.Fmd;
 import java.awt.Image;

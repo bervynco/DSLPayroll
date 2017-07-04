@@ -745,7 +745,7 @@ public class DB {
         
         // end of get date min max
         //get holiday
-            PreparedStatement psHoliday = c.prepareStatement("Select count(*) from holiday where holidayDate BETWEEN "+ startDate +" AND " + endDate+ ";");
+            PreparedStatement psHoliday = c.prepareStatement("Select count(*) from holiday where holidayDate BETWEEN CAST('"+startDate+"' AS DATE) AND CAST('"+endDate+"' AS DATE);");
             ResultSet rsHoliday = psHoliday.executeQuery();
             int holidayCount = 0;
             rsHoliday.first();
@@ -763,7 +763,7 @@ public class DB {
             // end of get attendance count
             
             //get bonus
-            PreparedStatement psBonus = c.prepareStatement("Select amount from salary_extra where employeeID = ? and appliedDate between " + startDate +" AND " + endDate+ ";");
+            PreparedStatement psBonus = c.prepareStatement("Select amount from salary_extra where employeeID = ? and appliedDate BETWEEN CAST('"+startDate+"' AS DATE) AND CAST('"+endDate+"' AS DATE);");
             psBonus.setInt(1, userList.get(k).getEmployeeID());
             ResultSet rsBonus = psBonus.executeQuery();
             float bonus = 0;
@@ -772,7 +772,7 @@ public class DB {
             }
             //end get bonus
             //get cash advance
-            PreparedStatement psAdvance = c.prepareStatement("Select amount from salary_condition where employeeID = ? and type = 'Cash Advance' AND appliedDate between " + startDate +" AND " + endDate+ ";");
+            PreparedStatement psAdvance = c.prepareStatement("Select amount from salary_condition where employeeID = ? and type = 'Cash Advance' AND appliedDate BETWEEN CAST('"+startDate+"' AS DATE) AND CAST('"+endDate+"' AS DATE);");
             psAdvance.setInt(1, userList.get(k).getEmployeeID());
             ResultSet rsAdvance = psAdvance.executeQuery();
             float cashAdvance = 0;
@@ -780,7 +780,7 @@ public class DB {
                 cashAdvance = cashAdvance + rsAdvance.getFloat(1);
             }
             // end get cash advance
-            PreparedStatement psLoan = c.prepareStatement("Select amount from salary_condition where employeeID = ? and type = 'Loan' AND appliedDate between " + startDate +" AND " + endDate+ ";");
+            PreparedStatement psLoan = c.prepareStatement("Select amount from salary_condition where employeeID = ? and type = 'Loan' AND appliedDate BETWEEN CAST('"+startDate+"' AS DATE) AND CAST('"+endDate+"' AS DATE);");
             psLoan.setInt(1, userList.get(k).getEmployeeID());
             ResultSet rsLoan = psLoan.executeQuery();
             float loan = 0;

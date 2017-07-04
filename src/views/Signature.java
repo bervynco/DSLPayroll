@@ -40,7 +40,7 @@ public class Signature extends javax.swing.JFrame {
     private static ArrayList<String> employeePages = new ArrayList<String>();
     private final static JPanel panel = new JPanel();
     public Signature(User user, ArrayList<String> employeePages, String dateStart, String dateEnd) {
-        initComponents();
+        // initComponents();
         this.sessionUser = user;
         this.employeePages = employeePages;
         this.dateStart = dateStart;
@@ -48,14 +48,16 @@ public class Signature extends javax.swing.JFrame {
         Signature.SimplePaintPanel content = new Signature.SimplePaintPanel();
         window.setContentPane(content);
         window.setSize(600,480);
-        window.setLocation(100,100);
+        //window.setLocation(100,100);
+        window.setLocationRelativeTo(null);
+        
         window.setDefaultCloseOperation( JFrame.EXIT_ON_CLOSE );
         window.setVisible(true);
         
     }
-    public void init() {
-      setContentPane( new Signature.SimplePaintPanel() );
-    }
+//    public void init() {
+//      setContentPane( new Signature.SimplePaintPanel() );
+//    }
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -121,6 +123,7 @@ public class Signature extends javax.swing.JFrame {
                                 list.pack();
                                 list.setLocationRelativeTo(null);
                                 list.setDefaultCloseOperation(0);
+                                list.setExtendedState(JFrame.MAXIMIZED_BOTH); 
                                 list.setVisible(true);
                             } catch (SQLException ex) {
                                 Logger.getLogger(Signature.class.getName()).log(Level.SEVERE, null, ex);

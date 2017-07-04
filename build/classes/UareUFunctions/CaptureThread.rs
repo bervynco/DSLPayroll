@@ -1,3 +1,0 @@
-dsltimeloggingsystem.CaptureThread$1
-dsltimeloggingsystem.CaptureThread
-dsltimeloggingsystem.CaptureThread$CaptureEvent

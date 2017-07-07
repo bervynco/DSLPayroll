@@ -40,7 +40,6 @@ import models.Absence;
 import models.Attendance;
 import models.Files;
 import models.Notes;
-import models.PayrollClass;
 import models.PayrollDetails;
 import models.Reports;
 import models.SalaryCondition;
@@ -62,7 +61,7 @@ public class DB {
 //    private static final SimpleDateFormat sdf = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss");
     
     private static String user = "root";
-    private static String pass = "password";
+    private static String pass = "DslDatabase";
     private static String host = "localhost";
     private static String port = "3306";
     private static String url = "jdbc:mysql://" + host + ":" + port + "/dsl";
@@ -335,7 +334,7 @@ public class DB {
         int month = cal.get(Calendar.MONTH);
         int year = cal.get(Calendar.YEAR);
         PreparedStatement ps = c.prepareStatement("SELECT a.payrollID, a.employeeID, a.name, a.rate, a.sssDeduction, a.pagibigDeduction, a.philHealthDeduction,"+
-                                                    " a.bonus, a.cashAdvance, a.loan, a.days, a.overTime, a.taxDeduction, a.totalSalary, a.claimed, a.claimDate "+
+                                                    " a.bonus, a.cashAdvance, a.loan, a.days, a.overTime, a.taxDeduction, a.holidayBonus, a.totalSalary, a.claimed, a.claimDate "+
                                                     " FROM payroll a where a.claimed = 0 ORDER BY employeeID DESC");
         //and month(a.claimDate) = ? and year(a.claimDate) = ?  
 //        ps.setInt(1, month+1);
@@ -357,10 +356,11 @@ public class DB {
             payroll.setLoan(rs.getFloat(10));
             payroll.setDays(rs.getInt(11));
             payroll.setOverTime(rs.getFloat(12));
-            payroll.setTaxDeduction(rs.getFloat(13));
-            payroll.setTotalSalary(rs.getInt(14));
-            payroll.setIsClaimed(rs.getString(15));
-            payroll.setClaimDate(rs.getTimestamp(16));
+            payroll.setHolidayBonus(rs.getFloat(13));
+            payroll.setTaxDeduction(rs.getFloat(14));
+            payroll.setTotalSalary(rs.getInt(15));
+            payroll.setIsClaimed(rs.getString(16));
+            payroll.setClaimDate(rs.getTimestamp(17));
             
             payrollList.add(payroll);
         }
@@ -789,10 +789,10 @@ public class DB {
             }
             //compute total salary
             float totalSalary = (attendanceCount * userList.get(k).getRate()) - userList.get(k).getSSSDeduction() - userList.get(k).getPhilHealthDeduction() - 
-                    userList.get(k).getPagibigDeduction()- userList.get(k).getTaxDeduction() + bonus - loan - cashAdvance;
+                    userList.get(k).getPagibigDeduction()- userList.get(k).getTaxDeduction() + bonus - loan - cashAdvance; //no holidayBonus yet
             // 
             PreparedStatement ps2 = c.prepareStatement("INSERT INTO payroll (employeeID, name, rate, sssDeduction,"+
-                    " philHealthDeduction, pagibigDeduction, taxDeduction, bonus, cashAdvance, loan, days, overTime, totalSalary) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)");
+                    " philHealthDeduction, pagibigDeduction, taxDeduction, bonus, cashAdvance, holidayBonus, loan, days, overTime, totalSalary) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
             // 8 = rate
             // 17 = sssDeduction
             // 18 = philHealthDeduction
@@ -807,14 +807,15 @@ public class DB {
             ps2.setFloat(7, userList.get(k).getTaxDeduction());
             ps2.setFloat(8, bonus);
             ps2.setFloat(9, cashAdvance);
-            ps2.setFloat(10, loan);
-            ps2.setFloat(11, attendanceCount);
-            ps2.setFloat(12, 0);
-            ps2.setFloat(13, totalSalary);
+            ps2.setFloat(10, 0);
+            ps2.setFloat(11, loan);
+            ps2.setFloat(12, attendanceCount);
+            ps2.setFloat(13, 0);
+            ps2.setFloat(14, totalSalary);
             ps2.executeUpdate();
             
             PreparedStatement ps3 = c.prepareStatement("INSERT INTO payroll_history (employeeID, name, rate, sssDeduction,"+
-                    " philHealthDeduction, pagibigDeduction, taxDeduction, bonus, cashAdvance, loan, days, overTime, totalSalary) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)");
+                    " philHealthDeduction, pagibigDeduction, taxDeduction, bonus, cashAdvance, holidayBonus, loan, days, overTime, totalSalary) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
             ps3.setInt(1, userList.get(k).getEmployeeID());
             ps3.setString(2, userList.get(k).getFirstName() + " " + userList.get(k).getLastName());
             ps3.setFloat(3, userList.get(k).getRate());
@@ -824,10 +825,11 @@ public class DB {
             ps3.setFloat(7, userList.get(k).getTaxDeduction());
             ps3.setFloat(8, bonus);
             ps3.setFloat(9, cashAdvance);
-            ps3.setFloat(10, loan);
-            ps3.setFloat(11, attendanceCount - holidayCount);
-            ps3.setFloat(12, 0);
-            ps3.setFloat(13, totalSalary);
+            ps3.setFloat(10, 0);
+            ps3.setFloat(11, loan);
+            ps3.setFloat(12, attendanceCount - holidayCount);
+            ps3.setFloat(13, 0);
+            ps3.setFloat(14, totalSalary);
             ps3.executeUpdate();  
         }
     }
@@ -837,7 +839,7 @@ public class DB {
         //INSERT INTO payroll (employeeID, name, rate, sssDeduction,"+" philHealthDeduction, pagibigDeduction, taxDeduction, bonus, cashAdvance, loan, days, overTime, totalSalary
         PreparedStatement ps = c.prepareStatement("Select employeeID, name, rate, sssDeduction," +  
                 "philHealthDeduction, pagibigDeduction, taxDeduction, bonus, cashAdvance, loan,"+
-                " days, overTime, totalSalary from payroll where employeeID = ?");
+                " days, overTime, holidayBonus, totalSalary from payroll where employeeID = ?");
         ps.setInt(1, employeeID);
         
         ResultSet rs = ps.executeQuery();
@@ -855,16 +857,18 @@ public class DB {
             payroll.setLoan(rs.getFloat(10));
             payroll.setDays(rs.getInt(11));
             payroll.setOverTime(rs.getInt(12));
-            payroll.setTotalSalary(rs.getFloat(13));
+            payroll.setHolidayBonus(rs.getFloat(13));
+            payroll.setTotalSalary(rs.getFloat(14));
             
         }
         
         return payroll;
     }
-    public static String setSalaryClaim(int employeeID, float rate, float sssDeduction, float pagibigDeduction, float philHealthDeduction, float bonus, float cashAdvance, float loan, int days, float overTime, float totalSalary, float taxDeduction) throws ClassNotFoundException, SQLException {
+    public static String setSalaryClaim(int employeeID, float rate, float sssDeduction, float pagibigDeduction, float philHealthDeduction, 
+            float bonus, float cashAdvance, float loan, int days, float overTime, float totalSalary, float taxDeduction, float holidayBonus) throws ClassNotFoundException, SQLException {
         Connection c = connect();
         PreparedStatement ps = c.prepareStatement("UPDATE payroll set rate = ?, sssDeduction = ?, pagibigDeduction = ?, philHealthDeduction = ?," +
-            " bonus = ?, cashAdvance = ?, loan = ?, days = ?, overTime = ?, totalSalary = ?, taxDeduction = ?, claimed = ? where employeeID = ?");
+            " bonus = ?, cashAdvance = ?, loan = ?, days = ?, overTime = ?, totalSalary = ?, taxDeduction = ?, holidayBonus = ?, claimed = ? where employeeID = ?");
         
         
         ps.setFloat(1, rate);
@@ -878,14 +882,15 @@ public class DB {
         ps.setFloat(9, overTime);
         ps.setFloat(10, totalSalary);
         ps.setFloat(11, taxDeduction);
-        ps.setInt(12, 1);
-        ps.setInt(13, employeeID);
+        ps.setFloat(12, holidayBonus);
+        ps.setInt(13, 1);
+        ps.setInt(14, employeeID);
         
         int rows = ps.executeUpdate();
 
         if(rows > 0){
             PreparedStatement psHistory = c.prepareStatement("UPDATE payroll_history set rate = ?, sssDeduction = ?, pagibigDeduction = ?, philHealthDeduction = ?," +
-            " bonus = ?, cashAdvance = ?, loan = ?, days = ?, overTime = ?, totalSalary = ?, taxDeduction = ?, claimed = ? where employeeID = ?");
+            " bonus = ?, cashAdvance = ?, loan = ?, days = ?, overTime = ?, totalSalary = ?, taxDeduction = ?, holidayBonus = ?, claimed = ? where employeeID = ?");
             psHistory.setFloat(1, rate);
             psHistory.setFloat(2, sssDeduction);
             psHistory.setFloat(3, pagibigDeduction);
@@ -897,8 +902,9 @@ public class DB {
             psHistory.setFloat(9, overTime);
             psHistory.setFloat(10, totalSalary);
             psHistory.setFloat(11, taxDeduction);
-            psHistory.setInt(12, 1);
-            psHistory.setInt(13, employeeID);
+            psHistory.setFloat(12, holidayBonus);
+            psHistory.setInt(13, 1);
+            psHistory.setInt(14, employeeID);
         
             psHistory.executeUpdate();
             PreparedStatement ps1 = c.prepareStatement("UPDATE users set SSSDeduction = ?, pagibigDeduction = ?,"+
@@ -1172,71 +1178,71 @@ public class DB {
         c.close();
         return filesList;
     }
-    public static List<PayrollDetails> getSalaryClaim(int employeeID) throws ClassNotFoundException, SQLException {
-        Connection c = connect();
-        String sqlSyntax = null;
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(new java.sql.Date(getCurrentCalendar()));
-        int month = cal.get(Calendar.MONTH) + 1;
-        int day = cal.get(Calendar.DATE);
-        int year = cal.get(Calendar.YEAR);
-        int dayStart = 0;
-        int dayEnd = 0;
-        List<PayrollDetails> details = new ArrayList<>();
-        if(day >= 1 && day <=15){
-            dayStart = 1;
-            dayEnd = 15;
-        }
-        else{
-            dayStart = 16;
-            dayEnd = 31;
-        }
-        if(employeeID == 0){
-            sqlSyntax = "month(a.claimDate) = ? and (day(a.claimDate) >= ? and day(a.claimDate) <= ? )and year(a.claimDate) = ?";
-        }
-        else{
-            sqlSyntax = "a.employeeID = ? and month(a.claimDate) = ? and (day(a.claimDate) >= ? and day(a.claimDate) <= ? ) and year(a.claimDate) = ?";
-        }
-        
-        PreparedStatement ps = c.prepareStatement("SELECT a.employeeID, concat(b.firstName, ' ', b.lastName) as 'Name', a.rate, a.sssDeduction, a.pagibigDeduction, a.philHealthDeduction, a.bonus, a.cashAdvance, a.loan,"+
-                " a.days, a.overtime, a.totalSalary, a.taxDeduction, a.isClaimed, a.claimDate from payroll a, users b where a.employeeID = b.employeeID and " + sqlSyntax);
-        if(employeeID == 0){
-            ps.setInt(1, month);
-            ps.setInt(2, dayStart);
-            ps.setInt(3, dayEnd);
-            ps.setInt(4, year);
-        }
-        else{
-            ps.setInt(1, employeeID);
-            ps.setInt(2, month);
-            ps.setInt(3, dayStart);
-            ps.setInt(4, dayEnd);
-            ps.setInt(5, year);
-        }
-        ResultSet rs = ps.executeQuery();
-        while(rs.next()){
-            PayrollDetails payroll = new PayrollDetails();
-            
-            payroll.setEmployeeID(rs.getInt(1));
-            payroll.setEmployeeName(rs.getString(2));
-            payroll.setRate(rs.getFloat(3));
-            payroll.setSssDeduction(rs.getFloat(4));
-            payroll.setPagibigDeduction(rs.getFloat(5));
-            payroll.setPhilHealthDeduction(rs.getFloat(6));
-            payroll.setBonus(rs.getFloat(7));
-            payroll.setCashAdvance(rs.getFloat(8));
-            payroll.setLoan(rs.getFloat(9));
-            payroll.setDays(rs.getInt(10));
-            payroll.setOverTime(rs.getFloat(11));
-            payroll.setTotalSalary(rs.getInt(12));
-            payroll.setTaxDeduction(rs.getFloat(13));
-            payroll.setIsClaimed(rs.getString(14));
-            payroll.setClaimDate(rs.getTimestamp(15));
-            details.add(payroll);
-        }
-        c.close();
-        return details;
-    }
+//    public static List<PayrollDetails> getSalaryClaim(int employeeID) throws ClassNotFoundException, SQLException {
+//        Connection c = connect();
+//        String sqlSyntax = null;
+//        Calendar cal = Calendar.getInstance();
+//        cal.setTime(new java.sql.Date(getCurrentCalendar()));
+//        int month = cal.get(Calendar.MONTH) + 1;
+//        int day = cal.get(Calendar.DATE);
+//        int year = cal.get(Calendar.YEAR);
+//        int dayStart = 0;
+//        int dayEnd = 0;
+//        List<PayrollDetails> details = new ArrayList<>();
+//        if(day >= 1 && day <=15){
+//            dayStart = 1;
+//            dayEnd = 15;
+//        }
+//        else{
+//            dayStart = 16;
+//            dayEnd = 31;
+//        }
+//        if(employeeID == 0){
+//            sqlSyntax = "month(a.claimDate) = ? and (day(a.claimDate) >= ? and day(a.claimDate) <= ? )and year(a.claimDate) = ?";
+//        }
+//        else{
+//            sqlSyntax = "a.employeeID = ? and month(a.claimDate) = ? and (day(a.claimDate) >= ? and day(a.claimDate) <= ? ) and year(a.claimDate) = ?";
+//        }
+//        
+//        PreparedStatement ps = c.prepareStatement("SELECT a.employeeID, concat(b.firstName, ' ', b.lastName) as 'Name', a.rate, a.sssDeduction, a.pagibigDeduction, a.philHealthDeduction, a.bonus, a.cashAdvance, a.loan,"+
+//                " a.days, a.overtime, a.totalSalary, a.taxDeduction, a.isClaimed, a.claimDate from payroll a, users b where a.employeeID = b.employeeID and " + sqlSyntax);
+//        if(employeeID == 0){
+//            ps.setInt(1, month);
+//            ps.setInt(2, dayStart);
+//            ps.setInt(3, dayEnd);
+//            ps.setInt(4, year);
+//        }
+//        else{
+//            ps.setInt(1, employeeID);
+//            ps.setInt(2, month);
+//            ps.setInt(3, dayStart);
+//            ps.setInt(4, dayEnd);
+//            ps.setInt(5, year);
+//        }
+//        ResultSet rs = ps.executeQuery();
+//        while(rs.next()){
+//            PayrollDetails payroll = new PayrollDetails();
+//            
+//            payroll.setEmployeeID(rs.getInt(1));
+//            payroll.setEmployeeName(rs.getString(2));
+//            payroll.setRate(rs.getFloat(3));
+//            payroll.setSssDeduction(rs.getFloat(4));
+//            payroll.setPagibigDeduction(rs.getFloat(5));
+//            payroll.setPhilHealthDeduction(rs.getFloat(6));
+//            payroll.setBonus(rs.getFloat(7));
+//            payroll.setCashAdvance(rs.getFloat(8));
+//            payroll.setLoan(rs.getFloat(9));
+//            payroll.setDays(rs.getInt(10));
+//            payroll.setOverTime(rs.getFloat(11));
+//            payroll.setTotalSalary(rs.getInt(12));
+//            payroll.setTaxDeduction(rs.getFloat(13));
+//            payroll.setIsClaimed(rs.getString(14));
+//            payroll.setClaimDate(rs.getTimestamp(15));
+//            details.add(payroll);
+//        }
+//        c.close();
+//        return details;
+//    }
     
     public static List<PayrollDetails> getReportSalaryClaim(String startDate, String endDate, int employeeID) throws ClassNotFoundException, SQLException, ParseException {
         Connection c = connect();
@@ -1268,7 +1274,7 @@ public class DB {
         
         
         PreparedStatement ps = c.prepareStatement("SELECT employeeID, rate, sssDeduction, pagibigDeduction, philHealthDeduction, bonus, cashAdvance, loan, days, overTime,"+
-                "totalSalary, taxDeduction, claimDate, claimed from payroll_history a where employeeID = ? and claimed = 1 and a.claimDate BETWEEN CAST('"+startDate+"' AS DATE) AND CAST('"+endDate+"' AS DATE);");
+                "totalSalary, taxDeduction, holidayBonus, claimDate, claimed from payroll_history a where employeeID = ? and claimed = 1 and a.claimDate BETWEEN CAST('"+startDate+"' AS DATE) AND CAST('"+endDate+"' AS DATE);");
         ps.setInt(1, employeeID);
         
         ResultSet rs = ps.executeQuery();
@@ -1286,8 +1292,9 @@ public class DB {
             payroll.setOverTime(rs.getFloat(10));
             payroll.setTotalSalary(rs.getFloat(11));
             payroll.setTaxDeduction(rs.getFloat(12));
-            payroll.setClaimDate(rs.getTimestamp(13));
-            payroll.setIsClaimed(rs.getString(14));
+            payroll.setHolidayBonus(rs.getFloat(13));
+            payroll.setClaimDate(rs.getTimestamp(14));
+            payroll.setIsClaimed(rs.getString(15));
             
             details.add(payroll);
         }

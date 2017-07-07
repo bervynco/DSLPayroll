@@ -351,7 +351,12 @@ public class GenerateReport {
                 c3.setHorizontalAlignment(Element.ALIGN_CENTER);
                 c3.setVerticalAlignment(Element.ALIGN_MIDDLE);
                 tablePayroll.addCell(c3);
-
+                
+                c3 = new PdfPCell(new Phrase("Holiday Bonus"));
+                c3.setHorizontalAlignment(Element.ALIGN_CENTER);
+                c3.setVerticalAlignment(Element.ALIGN_MIDDLE);
+                tablePayroll.addCell(c3);
+                
                 c3 = new PdfPCell(new Phrase("Total Salary"));
                 c3.setHorizontalAlignment(Element.ALIGN_CENTER);
                 c3.setVerticalAlignment(Element.ALIGN_MIDDLE);
@@ -388,6 +393,7 @@ public class GenerateReport {
                         tablePayroll.addCell(Integer.toString(payrollDetails.get(k).getDays()));
                         tablePayroll.addCell(Float.toString(payrollDetails.get(k).getOverTime()));
                         tablePayroll.addCell(Float.toString(payrollDetails.get(k).getTaxDeduction()));
+                        tablePayroll.addCell(Float.toString(payrollDetails.get(k).getHolidayBonus()));
                         tablePayroll.addCell(Float.toString(payrollDetails.get(k).getTotalSalary()));
                         tablePayroll.addCell(payrollDetails.get(k).getClaimDate().toString());
                     }
@@ -460,7 +466,12 @@ public class GenerateReport {
                 c3.setHorizontalAlignment(Element.ALIGN_CENTER);
                 c3.setVerticalAlignment(Element.ALIGN_MIDDLE);
                 tablePayroll.addCell(c3);
-
+                
+                c3 = new PdfPCell(new Phrase("Holiday Bonus"));
+                c3.setHorizontalAlignment(Element.ALIGN_CENTER);
+                c3.setVerticalAlignment(Element.ALIGN_MIDDLE);
+                tablePayroll.addCell(c3);
+                
                 c3 = new PdfPCell(new Phrase("Total Salary"));
                 c3.setHorizontalAlignment(Element.ALIGN_CENTER);
                 c3.setVerticalAlignment(Element.ALIGN_MIDDLE);
@@ -484,6 +495,7 @@ public class GenerateReport {
                     tablePayroll.addCell(Integer.toString(payrollDetails.get(k).getDays()));
                     tablePayroll.addCell(Float.toString(payrollDetails.get(k).getOverTime()));
                     tablePayroll.addCell(Float.toString(payrollDetails.get(k).getTaxDeduction()));
+                    tablePayroll.addCell(Float.toString(payrollDetails.get(k).getHolidayBonus()));
                     tablePayroll.addCell(Float.toString(payrollDetails.get(k).getTotalSalary()));
                     tablePayroll.addCell(payrollDetails.get(k).getClaimDate().toString());
                 }
@@ -562,7 +574,12 @@ public class GenerateReport {
                 c1.setHorizontalAlignment(Element.ALIGN_CENTER);
                 c1.setVerticalAlignment(Element.ALIGN_MIDDLE);
                 tablePayroll.addCell(c1);
-
+                
+                c1 = new PdfPCell(new Phrase("Holiday Bonus"));
+                c1.setHorizontalAlignment(Element.ALIGN_CENTER);
+                c1.setVerticalAlignment(Element.ALIGN_MIDDLE);
+                tablePayroll.addCell(c1);
+                
                 c1 = new PdfPCell(new Phrase("Total Salary"));
                 c1.setHorizontalAlignment(Element.ALIGN_CENTER);
                 c1.setVerticalAlignment(Element.ALIGN_MIDDLE);
@@ -637,6 +654,7 @@ public class GenerateReport {
                         tablePayroll.addCell(Integer.toString(payrollDetails.get(k).getDays()));
                         tablePayroll.addCell(Float.toString(payrollDetails.get(k).getOverTime()));
                         tablePayroll.addCell(Float.toString(payrollDetails.get(k).getTaxDeduction()));
+                        tablePayroll.addCell(Float.toString(payrollDetails.get(k).getHolidayBonus()));
                         tablePayroll.addCell(Float.toString(payrollDetails.get(k).getTotalSalary()));
                         tablePayroll.addCell(payrollDetails.get(k).getClaimDate().toString());
                     }
@@ -730,7 +748,12 @@ public class GenerateReport {
             c1.setHorizontalAlignment(Element.ALIGN_CENTER);
             c1.setVerticalAlignment(Element.ALIGN_MIDDLE);
             tablePayroll.addCell(c1);
-
+            
+            c1 = new PdfPCell(new Phrase("Holiday Bonus"));
+            c1.setHorizontalAlignment(Element.ALIGN_CENTER);
+            c1.setVerticalAlignment(Element.ALIGN_MIDDLE);
+            tablePayroll.addCell(c1);
+                
             c1 = new PdfPCell(new Phrase("Total Salary"));
             c1.setHorizontalAlignment(Element.ALIGN_CENTER);
             c1.setVerticalAlignment(Element.ALIGN_MIDDLE);
@@ -804,6 +827,7 @@ public class GenerateReport {
                     tablePayroll.addCell(Integer.toString(payrollDetails.get(k).getDays()));
                     tablePayroll.addCell(Float.toString(payrollDetails.get(k).getOverTime()));
                     tablePayroll.addCell(Float.toString(payrollDetails.get(k).getTaxDeduction()));
+                    tablePayroll.addCell(Float.toString(payrollDetails.get(k).getHolidayBonus()));
                     tablePayroll.addCell(Float.toString(payrollDetails.get(k).getTotalSalary()));
                     tablePayroll.addCell(payrollDetails.get(k).getClaimDate().toString());
                 }

@@ -18,6 +18,7 @@ public class PayrollClass {
     private float sssDeduction;
     private float pagibigDeduction;
     private float philHealthDeduction;
+    private float holidayBonus;
     private float salary;
 
     public int getEmployeeID() {
@@ -84,6 +85,15 @@ public class PayrollClass {
         this.philHealthDeduction = philHealthDeduction;
     }
 
+    public float getHolidayBonus() {
+        return holidayBonus;
+    }
+
+    public void setHolidayBonus(float holidayBonus) {
+        this.holidayBonus = holidayBonus;
+    }
+    
+    
     public float getSalary() {
         return salary;
     }

@@ -23,6 +23,7 @@ public class PayrollDetails {
     private float bonus;
     private float cashAdvance;
     private float loan;
+    private float holidayBonus;
     private int days;
     private float overTime;
     private float totalSalary;
@@ -126,6 +127,15 @@ public class PayrollDetails {
         this.overTime = overTime;
     }
 
+    public float getHolidayBonus() {
+        return holidayBonus;
+    }
+
+    public void setHolidayBonus(float holidayBonus) {
+        this.holidayBonus = holidayBonus;
+    }
+    
+    
     public float getTotalSalary() {
         return totalSalary;
     }

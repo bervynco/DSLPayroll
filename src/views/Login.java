@@ -42,14 +42,16 @@ public class Login extends javax.swing.JFrame {
         initComponents();
         lblStatus.setFont(new Font("Serif", Font.PLAIN, 26));
         lblStatus.setHorizontalAlignment(JLabel.CENTER);
-        try {
-            // TODO add your handling code here:
-            m_collection = UareUGlobal.GetReaderCollection();
-        } catch (UareUException ex) {
-            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
-        }
-
-        m_reader = Selection.Select(m_collection);
+        btn_capture.setVisible(false);
+        jLabel2.setVisible(false);
+//        try {
+//            // TODO add your handling code here:
+//            m_collection = UareUGlobal.GetReaderCollection();
+//        } catch (UareUException ex) {
+//            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+//        }
+//
+//        m_reader = Selection.Select(m_collection);
         
         
         // db.setReader(m_reader);

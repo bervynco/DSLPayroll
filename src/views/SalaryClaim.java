@@ -81,7 +81,6 @@ public class SalaryClaim extends javax.swing.JFrame {
         label12 = new java.awt.Label();
         label13 = new java.awt.Label();
         label14 = new java.awt.Label();
-        label16 = new java.awt.Label();
         txtRate = new javax.swing.JTextField();
         txtOvertime = new javax.swing.JTextField();
         txtDays = new javax.swing.JTextField();
@@ -136,9 +135,6 @@ public class SalaryClaim extends javax.swing.JFrame {
 
         label14.setFont(new java.awt.Font("Tahoma", 1, 20)); // NOI18N
         label14.setText("Salary:");
-
-        label16.setFont(new java.awt.Font("Tahoma", 0, 16)); // NOI18N
-        label16.setText("Gross Salary:");
 
         btnCompute.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
         btnCompute.setText("Compute");
@@ -226,9 +222,7 @@ public class SalaryClaim extends javax.swing.JFrame {
                         .addComponent(lblStatus, javax.swing.GroupLayout.PREFERRED_SIZE, 458, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                .addComponent(label16, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addComponent(label10, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(label10, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addGroup(layout.createSequentialGroup()
                                 .addGap(104, 104, 104)
                                 .addComponent(btnBack, javax.swing.GroupLayout.PREFERRED_SIZE, 88, javax.swing.GroupLayout.PREFERRED_SIZE)))
@@ -317,8 +311,7 @@ public class SalaryClaim extends javax.swing.JFrame {
                 .addGap(4, 4, 4)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(lblSalary, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(label14, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(label16, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(label14, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 11, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnBack)
@@ -357,6 +350,7 @@ public class SalaryClaim extends javax.swing.JFrame {
             float totalSalary = (rate * days) -(sssDeduction + pagibigDeduction + philHealthDeduction + taxDeduction) + bonus - (cashAdvance + loan) + overTime + holidayBonus;
             String status = DB.setSalaryClaim(employeeID, rate, sssDeduction, pagibigDeduction, philHealthDeduction, bonus, cashAdvance, loan, days, 
                     overTime, totalSalary, taxDeduction, holidayBonus);
+            
             
             if(status.equals("Successful")){
                 this.setVisible(false);
@@ -429,7 +423,8 @@ public class SalaryClaim extends javax.swing.JFrame {
         int days = Integer.valueOf(txtDays.getText());
         float overTime = Float.valueOf(txtOvertime.getText());
         float taxDeduction = Float.valueOf(txtTaxDeduction.getText());
-        float totalSalary = (rate * days) -(sssDeduction + pagibigDeduction + philHealthDeduction + taxDeduction) + bonus - (cashAdvance + loan) + overTime;
+        float holidayBonus = Float.valueOf(txtHolidayBonus.getText());
+        float totalSalary = (rate * days) -(sssDeduction + pagibigDeduction + philHealthDeduction + taxDeduction) + bonus - (cashAdvance + loan) + overTime + holidayBonus;
         lblSalary.setText(Float.toString(totalSalary));
         lblSalary.setFont(new Font("Serif", Font.PLAIN, 24));
         lblSalary.setForeground(new Color(1, 169, 130));
@@ -465,7 +460,6 @@ public class SalaryClaim extends javax.swing.JFrame {
     private java.awt.Label label12;
     private java.awt.Label label13;
     private java.awt.Label label14;
-    private java.awt.Label label16;
     private java.awt.Label label4;
     private java.awt.Label label5;
     private java.awt.Label label6;

@@ -61,7 +61,7 @@ public class DB {
 //    private static final SimpleDateFormat sdf = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss");
     
     private static String user = "root";
-    private static String pass = "DslDatabase";
+    private static String pass = "password";
     private static String host = "localhost";
     private static String port = "3306";
     private static String url = "jdbc:mysql://" + host + ":" + port + "/dsl";

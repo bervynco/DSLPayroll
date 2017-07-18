@@ -50,7 +50,7 @@ public class ExcelParser {
         int lastCell=firstSheet.getRow(0).getLastCellNum();
         
         //String[] array = {"Emp No.", "AC-No.", "Name", "Date", "Clock In", "Clock Out", "ATT_Time"};
-        String[] array = {"Name", "Department", "Date", "Time In", "Time Out"};
+        String[] array = {"Name", "Department", "Date", "Time In"};
         List<Integer> columnIDs = new ArrayList<Integer>();
         Cell c;
         DB db = new DB();
@@ -75,12 +75,12 @@ public class ExcelParser {
                 Cell cell2 = row.getCell(columnIDs.get(1));
                 Cell cell3 = row.getCell(columnIDs.get(2));
                 Cell cell4 = row.getCell(columnIDs.get(3));
-                Cell cell5 = row.getCell(columnIDs.get(4));
+//                Cell cell5 = row.getCell(columnIDs.get(4));
                 String name = null;
                 String department = null;
                 String date = null;
                 String timeIn = null;
-                String timeOut = null;
+//                String timeOut = null;
                 if(cell1 != null){
                     name = cell1.toString();
                 }
@@ -93,13 +93,13 @@ public class ExcelParser {
                 if(cell4 != null){
                     timeIn = cell4.toString();
                 }
-                if(cell5 != null){
-                    timeOut = cell5.toString();
-                }
+//                if(cell5 != null){
+//                    timeOut = cell5.toString();
+//                }
                 
                 
                 
-                db.insertUserLogFromExcel(name, department, date, timeIn, timeOut);
+                db.insertUserLogFromExcel(name, department, date, timeIn);
             }
             
         }

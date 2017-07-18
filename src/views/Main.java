@@ -316,6 +316,7 @@ public class Main extends javax.swing.JFrame {
         employeeName = new javax.swing.JLabel();
         jLabel1 = new javax.swing.JLabel();
         comboBoxEmployees = new javax.swing.JComboBox<>();
+        btnExport = new javax.swing.JButton();
         jMenuBar1 = new javax.swing.JMenuBar();
         menuEmployee = new javax.swing.JMenu();
         menuPayrollOverview = new javax.swing.JMenu();
@@ -420,6 +421,14 @@ public class Main extends javax.swing.JFrame {
         comboBoxEmployees.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 comboBoxEmployeesActionPerformed(evt);
+            }
+        });
+
+        btnExport.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
+        btnExport.setText("Export");
+        btnExport.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnExportActionPerformed(evt);
             }
         });
 
@@ -529,7 +538,9 @@ public class Main extends javax.swing.JFrame {
                                 .addGap(33, 33, 33)
                                 .addComponent(btnEdit, javax.swing.GroupLayout.PREFERRED_SIZE, 160, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(30, 30, 30)
-                                .addComponent(btnDelete, javax.swing.GroupLayout.PREFERRED_SIZE, 160, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                .addComponent(btnDelete, javax.swing.GroupLayout.PREFERRED_SIZE, 160, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(33, 33, 33)
+                                .addComponent(btnExport, javax.swing.GroupLayout.PREFERRED_SIZE, 147, javax.swing.GroupLayout.PREFERRED_SIZE)))
                         .addGap(0, 0, Short.MAX_VALUE))
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.TRAILING)))
         );
@@ -541,10 +552,11 @@ public class Main extends javax.swing.JFrame {
                     .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(employeeName, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(btnEdit, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnAdd, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnDelete, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(btnEdit, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(btnAdd, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(btnDelete, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(btnExport, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addGap(19, 19, 19)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -685,6 +697,7 @@ public class Main extends javax.swing.JFrame {
             btnDelete.setVisible(false);
             btnAdd.setVisible(true);
             btnAdd.setLabel("Add");
+            btnExport.setVisible(true);
             lblTitle.setText("List of Employees");
             DefaultTableModel model = this.FillTable(this.currentMenu);
             tableList.setModel(model);
@@ -704,6 +717,7 @@ public class Main extends javax.swing.JFrame {
             btnEdit.setVisible(false);
             btnDelete.setVisible(false);
             btnAdd.setVisible(true);
+            btnExport.setVisible(true);
             btnAdd.setLabel("Generate Payout");
             lblTitle.setText("List of Payroll");
             DefaultTableModel model = this.FillTable(this.currentMenu);
@@ -725,6 +739,7 @@ public class Main extends javax.swing.JFrame {
             btnDelete.setVisible(false);
             btnAdd.setVisible(true);
             btnAdd.setLabel("Add");
+            btnExport.setVisible(false);
             lblTitle.setText("List of Salary Conditions");
             DefaultTableModel model = this.FillTable(this.currentMenu);
             tableList.setModel(model);
@@ -744,6 +759,7 @@ public class Main extends javax.swing.JFrame {
             btnEdit.setVisible(false);
             btnDelete.setVisible(false);
             btnAdd.setVisible(true);
+            btnExport.setVisible(false);
             btnAdd.setLabel("Upload");
             lblTitle.setText("List of Uploaded Documents");
             DefaultTableModel model = this.FillTable(this.currentMenu);
@@ -765,6 +781,7 @@ public class Main extends javax.swing.JFrame {
             btnEdit.setVisible(false);
             btnDelete.setVisible(false);
             btnAdd.setVisible(true);
+            btnExport.setVisible(false);
             btnAdd.setLabel("Add");
             lblTitle.setText("List of Notes");
             DefaultTableModel model = this.FillTable(this.currentMenu);
@@ -786,6 +803,7 @@ public class Main extends javax.swing.JFrame {
             btnDelete.setVisible(false);
             btnAdd.setVisible(true);
             btnAdd.setLabel("Generate");
+            btnExport.setVisible(false);
             lblTitle.setText("List of Reports Generated");
             DefaultTableModel model = this.FillTable(this.currentMenu);
             tableList.setModel(model);
@@ -805,6 +823,7 @@ public class Main extends javax.swing.JFrame {
             btnEdit.setVisible(false);
             btnDelete.setVisible(false);
             btnAdd.setVisible(false);
+            btnExport.setVisible(false);
             lblTitle.setText("List of System Logs");
             DefaultTableModel model = this.FillTable(this.currentMenu);
             tableList.setModel(model);
@@ -1024,11 +1043,27 @@ public class Main extends javax.swing.JFrame {
         else;
     }//GEN-LAST:event_tableListMouseClicked
 
+    private void btnExportActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnExportActionPerformed
+        // TODO add your handling code here:
+        if(this.currentMenu.equals("Employees") || this.currentMenu.equals("Payroll")){
+            try {
+                GenerateExcel generate = new GenerateExcel(this.sessionUser);
+                generate.generateExcel(this.currentMenu);
+            } catch (SQLException ex) {
+                Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (ClassNotFoundException ex) {
+                Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        else;
+    }//GEN-LAST:event_btnExportActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private java.awt.Button btnAdd;
     private java.awt.Button btnDelete;
     private java.awt.Button btnEdit;
+    private javax.swing.JButton btnExport;
     private javax.swing.JComboBox<String> comboBoxEmployees;
     private javax.swing.JLabel employeeName;
     private javax.swing.JLabel jLabel1;

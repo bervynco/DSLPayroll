@@ -655,7 +655,7 @@ public class DB {
         
         return rs.first();
     }
-    public static void insertUserLogFromExcel(String name, String department, String logDate, String timeIn, String timeOut) throws ClassNotFoundException, SQLException, ParseException{
+    public static void insertUserLogFromExcel(String name, String department, String logDate, String timeIn) throws ClassNotFoundException, SQLException, ParseException{
         Connection c = connect();
         SimpleDateFormat formatter = new SimpleDateFormat("MM/dd/yyyy");
         Date date = formatter.parse(logDate);
@@ -682,16 +682,17 @@ public class DB {
         if(employeeID == 0){
             employeeID = DB.insertUser(name);
         }
-       
-        PreparedStatement ps = c.prepareStatement("INSERT INTO time_logs (employeeID, name, department, logDate, timeIn, timeOut) VALUES (?,?,?,?,?,?)");
-        ps.setInt(1, employeeID);
-        ps.setString(2, name);
-        ps.setString(3, department);
-        ps.setDate(4, new java.sql.Date(convertDate(date)));
-        ps.setString(5, timeIn);
-        ps.setString(6, timeOut);
-        ps.executeUpdate();
-        
+        // System.out.println(timeIn);
+        if(timeIn != null){
+            PreparedStatement ps = c.prepareStatement("INSERT INTO time_logs (employeeID, name, department, logDate, timeIn, timeOut) VALUES (?,?,?,?,?,?)");
+            ps.setInt(1, employeeID);
+            ps.setString(2, name);
+            ps.setString(3, department);
+            ps.setDate(4, new java.sql.Date(convertDate(date)));
+            ps.setString(5, timeIn);
+            ps.setString(6, "");
+            ps.executeUpdate();
+        }
         c.close();
     }
     public static int getEmployeeIDFromName(String name) throws ClassNotFoundException, SQLException{
@@ -814,23 +815,23 @@ public class DB {
             ps2.setFloat(14, totalSalary);
             ps2.executeUpdate();
             
-            PreparedStatement ps3 = c.prepareStatement("INSERT INTO payroll_history (employeeID, name, rate, sssDeduction,"+
-                    " philHealthDeduction, pagibigDeduction, taxDeduction, bonus, cashAdvance, holidayBonus, loan, days, overTime, totalSalary) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
-            ps3.setInt(1, userList.get(k).getEmployeeID());
-            ps3.setString(2, userList.get(k).getFirstName() + " " + userList.get(k).getLastName());
-            ps3.setFloat(3, userList.get(k).getRate());
-            ps3.setFloat(4, userList.get(k).getSSSDeduction());
-            ps3.setFloat(5, userList.get(k).getPhilHealthDeduction());
-            ps3.setFloat(6, userList.get(k).getPagibigDeduction());
-            ps3.setFloat(7, userList.get(k).getTaxDeduction());
-            ps3.setFloat(8, bonus);
-            ps3.setFloat(9, cashAdvance);
-            ps3.setFloat(10, 0);
-            ps3.setFloat(11, loan);
-            ps3.setFloat(12, attendanceCount - holidayCount);
-            ps3.setFloat(13, 0);
-            ps3.setFloat(14, totalSalary);
-            ps3.executeUpdate();  
+//            PreparedStatement ps3 = c.prepareStatement("INSERT INTO payroll_history (employeeID, name, rate, sssDeduction,"+
+//                    " philHealthDeduction, pagibigDeduction, taxDeduction, bonus, cashAdvance, holidayBonus, loan, days, overTime, totalSalary) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
+//            ps3.setInt(1, userList.get(k).getEmployeeID());
+//            ps3.setString(2, userList.get(k).getFirstName() + " " + userList.get(k).getLastName());
+//            ps3.setFloat(3, userList.get(k).getRate());
+//            ps3.setFloat(4, userList.get(k).getSSSDeduction());
+//            ps3.setFloat(5, userList.get(k).getPhilHealthDeduction());
+//            ps3.setFloat(6, userList.get(k).getPagibigDeduction());
+//            ps3.setFloat(7, userList.get(k).getTaxDeduction());
+//            ps3.setFloat(8, bonus);
+//            ps3.setFloat(9, cashAdvance);
+//            ps3.setFloat(10, 0);
+//            ps3.setFloat(11, loan);
+//            ps3.setFloat(12, attendanceCount - holidayCount);
+//            ps3.setFloat(13, 0);
+//            ps3.setFloat(14, totalSalary);
+//            ps3.executeUpdate();  
         }
     }
     
@@ -865,7 +866,7 @@ public class DB {
         return payroll;
     }
     public static String setSalaryClaim(int employeeID, float rate, float sssDeduction, float pagibigDeduction, float philHealthDeduction, 
-            float bonus, float cashAdvance, float loan, int days, float overTime, float totalSalary, float taxDeduction, float holidayBonus) throws ClassNotFoundException, SQLException {
+            float bonus, float cashAdvance, float loan, int days, float overTime, float totalSalary, float taxDeduction, float holidayBonus, String name) throws ClassNotFoundException, SQLException {
         Connection c = connect();
         PreparedStatement ps = c.prepareStatement("UPDATE payroll set rate = ?, sssDeduction = ?, pagibigDeduction = ?, philHealthDeduction = ?," +
             " bonus = ?, cashAdvance = ?, loan = ?, days = ?, overTime = ?, totalSalary = ?, taxDeduction = ?, holidayBonus = ?, claimed = ? where employeeID = ?");
@@ -889,8 +890,11 @@ public class DB {
         int rows = ps.executeUpdate();
 
         if(rows > 0){
-            PreparedStatement psHistory = c.prepareStatement("UPDATE payroll_history set rate = ?, sssDeduction = ?, pagibigDeduction = ?, philHealthDeduction = ?," +
-            " bonus = ?, cashAdvance = ?, loan = ?, days = ?, overTime = ?, totalSalary = ?, taxDeduction = ?, holidayBonus = ?, claimed = ? where employeeID = ?");
+            PreparedStatement psHistory = c.prepareStatement("INSERT into payroll_history(rate, sssDeduction, pagibigDeduction, "
+                    + "philHealthDeduction, bonus, cashAdvance, loan, days, overTime, totalSalary, taxDeduction, holidayBonus, claimed, employeeID, name) "
+                    + "VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
+//            PreparedStatement psHistory = c.prepareStatement("UPDATE payroll_history set rate = ?, sssDeduction = ?, pagibigDeduction = ?, philHealthDeduction = ?," +
+//            " bonus = ?, cashAdvance = ?, loan = ?, days = ?, overTime = ?, totalSalary = ?, taxDeduction = ?, holidayBonus = ?, claimed = ? where employeeID = ?");
             psHistory.setFloat(1, rate);
             psHistory.setFloat(2, sssDeduction);
             psHistory.setFloat(3, pagibigDeduction);
@@ -905,7 +909,8 @@ public class DB {
             psHistory.setFloat(12, holidayBonus);
             psHistory.setInt(13, 1);
             psHistory.setInt(14, employeeID);
-        
+            psHistory.setString(15, name);
+//        
             psHistory.executeUpdate();
             PreparedStatement ps1 = c.prepareStatement("UPDATE users set SSSDeduction = ?, pagibigDeduction = ?,"+
                     " philHealthDeduction = ?, taxDeduction = ?, rate = ? where employeeID = ?");
@@ -1178,96 +1183,49 @@ public class DB {
         c.close();
         return filesList;
     }
-//    public static List<PayrollDetails> getSalaryClaim(int employeeID) throws ClassNotFoundException, SQLException {
-//        Connection c = connect();
-//        String sqlSyntax = null;
-//        Calendar cal = Calendar.getInstance();
-//        cal.setTime(new java.sql.Date(getCurrentCalendar()));
-//        int month = cal.get(Calendar.MONTH) + 1;
-//        int day = cal.get(Calendar.DATE);
-//        int year = cal.get(Calendar.YEAR);
-//        int dayStart = 0;
-//        int dayEnd = 0;
-//        List<PayrollDetails> details = new ArrayList<>();
-//        if(day >= 1 && day <=15){
-//            dayStart = 1;
-//            dayEnd = 15;
-//        }
-//        else{
-//            dayStart = 16;
-//            dayEnd = 31;
-//        }
-//        if(employeeID == 0){
-//            sqlSyntax = "month(a.claimDate) = ? and (day(a.claimDate) >= ? and day(a.claimDate) <= ? )and year(a.claimDate) = ?";
-//        }
-//        else{
-//            sqlSyntax = "a.employeeID = ? and month(a.claimDate) = ? and (day(a.claimDate) >= ? and day(a.claimDate) <= ? ) and year(a.claimDate) = ?";
-//        }
-//        
-//        PreparedStatement ps = c.prepareStatement("SELECT a.employeeID, concat(b.firstName, ' ', b.lastName) as 'Name', a.rate, a.sssDeduction, a.pagibigDeduction, a.philHealthDeduction, a.bonus, a.cashAdvance, a.loan,"+
-//                " a.days, a.overtime, a.totalSalary, a.taxDeduction, a.isClaimed, a.claimDate from payroll a, users b where a.employeeID = b.employeeID and " + sqlSyntax);
-//        if(employeeID == 0){
-//            ps.setInt(1, month);
-//            ps.setInt(2, dayStart);
-//            ps.setInt(3, dayEnd);
-//            ps.setInt(4, year);
-//        }
-//        else{
-//            ps.setInt(1, employeeID);
-//            ps.setInt(2, month);
-//            ps.setInt(3, dayStart);
-//            ps.setInt(4, dayEnd);
-//            ps.setInt(5, year);
-//        }
-//        ResultSet rs = ps.executeQuery();
-//        while(rs.next()){
-//            PayrollDetails payroll = new PayrollDetails();
-//            
-//            payroll.setEmployeeID(rs.getInt(1));
-//            payroll.setEmployeeName(rs.getString(2));
-//            payroll.setRate(rs.getFloat(3));
-//            payroll.setSssDeduction(rs.getFloat(4));
-//            payroll.setPagibigDeduction(rs.getFloat(5));
-//            payroll.setPhilHealthDeduction(rs.getFloat(6));
-//            payroll.setBonus(rs.getFloat(7));
-//            payroll.setCashAdvance(rs.getFloat(8));
-//            payroll.setLoan(rs.getFloat(9));
-//            payroll.setDays(rs.getInt(10));
-//            payroll.setOverTime(rs.getFloat(11));
-//            payroll.setTotalSalary(rs.getInt(12));
-//            payroll.setTaxDeduction(rs.getFloat(13));
-//            payroll.setIsClaimed(rs.getString(14));
-//            payroll.setClaimDate(rs.getTimestamp(15));
-//            details.add(payroll);
-//        }
-//        c.close();
-//        return details;
-//    }
-    
+
+    public List<PayrollDetails> getPayrollHistory(int employeeID) throws ClassNotFoundException, SQLException{
+        List<PayrollDetails> details = new ArrayList<PayrollDetails>();
+        Calendar cal = Calendar.getInstance();
+        Date date = new Date();
+        cal.setTime(date);
+        int year = cal.get(Calendar.YEAR);
+        Connection c = connect();
+        PreparedStatement ps = c.prepareStatement("Select employeeID, rate, sssDeduction, pagibigDeduction, philHealthDeduction, bonus, cashAdvance, loan, days, overTime,"+
+                "totalSalary, taxDeduction, holidayBonus, claimDate, claimed from payroll_history a where employeeID = ? and claimed = 1 and year(claimDate) = ? ");
+        ps.setInt(1, employeeID);
+        ps.setInt(2, year);
+        
+        ResultSet rs = ps.executeQuery();
+        while(rs.next()){
+            PayrollDetails payroll = new PayrollDetails();
+            payroll.setEmployeeID(rs.getInt(1));
+            payroll.setRate(rs.getFloat(2));
+            payroll.setSssDeduction(rs.getFloat(3));
+            payroll.setPagibigDeduction(rs.getFloat(4));
+            payroll.setPhilHealthDeduction(rs.getFloat(5));
+            payroll.setBonus(rs.getFloat(6));
+            payroll.setCashAdvance(rs.getFloat(7));
+            payroll.setLoan(rs.getFloat(8));
+            payroll.setDays(rs.getInt(9));
+            payroll.setOverTime(rs.getFloat(10));
+            payroll.setTotalSalary(rs.getFloat(11));
+            payroll.setTaxDeduction(rs.getFloat(12));
+            payroll.setHolidayBonus(rs.getFloat(13));
+            payroll.setClaimDate(rs.getTimestamp(14));
+            payroll.setIsClaimed(rs.getString(15));
+            
+            details.add(payroll);
+        }
+        return details;
+    }
     public static List<PayrollDetails> getReportSalaryClaim(String startDate, String endDate, int employeeID) throws ClassNotFoundException, SQLException, ParseException {
         Connection c = connect();
         Calendar cal = Calendar.getInstance();
         Calendar cal2 = Calendar.getInstance();
         List<Attendance> attendanceList = new ArrayList<>();
         
-//        int startMonth = 0;
-//        int startDay = 0;
-//        int startYear = 0;
-//        int endMonth = 0;
-//        int endDay = 0;
-//        int endYear = 0;
-//
-//        DateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-//        Date dateStart = format.parse(startDate);
-//        Date dateEnd = format.parse(endDate);
-//        cal.setTime(dateStart);
-//        cal2.setTime(dateEnd);
-//        startMonth = cal.get(Calendar.MONTH) + 1;
-//        startDay = cal.get(Calendar.DATE);
-//        startYear = cal.get(Calendar.YEAR);
-//        endMonth = cal2.get(Calendar.MONTH) + 1;
-//        endDay = cal2.get(Calendar.DATE);
-//        endYear = cal2.get(Calendar.YEAR);
+
         
         
         List<PayrollDetails> details = new ArrayList<>();
@@ -1351,33 +1309,13 @@ public class DB {
         Calendar cal2 = Calendar.getInstance();
         List<Attendance> attendanceList = new ArrayList<>();
         
-//        int startMonth = 0;
-//        int startDay = 0;
-//        int startYear = 0;
-//        int endMonth = 0;
-//        int endDay = 0;
-//        int endYear = 0;
-//
-//        DateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-//        Date dateStart = format.parse(startDate);
-//        Date dateEnd = format.parse(endDate);
-//        cal.setTime(dateStart);
-//        cal2.setTime(dateEnd);
-//        startMonth = cal.get(Calendar.MONTH) + 1;
-//        startDay = cal.get(Calendar.DATE);
-//        startYear = cal.get(Calendar.YEAR);
-//        endMonth = cal2.get(Calendar.MONTH) + 1;
-//        endDay = cal2.get(Calendar.DATE);
-//        endYear = cal2.get(Calendar.YEAR);
+
     
         System.out.println(startDate);
         System.out.println(endDate);
         PreparedStatement ps = c.prepareStatement("SELECT a.employeeID, concat(b.firstName, ' ', b.lastName) as 'Name', a.logDate, a.timeIn,"+
                 " a.timeOut from time_logs a, users b where b.employeeID = a.employeeID and a.employeeID = ? and a.logDate BETWEEN CAST('"+startDate+"' AS DATE) AND CAST('"+endDate+"' AS DATE);");
-                //  + ""
-//                + ""
-//                + " '" + startDate + "' AND '" + endDate + "'");
-//BETWEEN CAST('2017-05-01' AS DATE) AND CAST('2017-05-30' AS DATE);
+
 
         ps.setInt(1, employeeID);
         ResultSet rs = ps.executeQuery();
@@ -1403,203 +1341,7 @@ public class DB {
         return attendanceList;
     }
    
-//    public static List<UserLogs> getSystemLogs(int employeeID, String startDate, String endDate, String filter) throws ClassNotFoundException, SQLException, ParseException{
-//        Connection c = connect();
-//        Calendar cal = Calendar.getInstance();
-//        Calendar cal2 = Calendar.getInstance();
-//        List<UserLogs> logs = new ArrayList<UserLogs>();
-//
-//        if(employeeID != 0){
-//            if(startDate.equals("") && endDate.equals("")){
-//                cal.setTime(new java.sql.Date(getCurrentCalendar()));
-//                int month = cal.get(Calendar.MONTH) + 1;
-//                int day = cal.get(Calendar.DATE);
-//                int year = cal.get(Calendar.YEAR);
-//                PreparedStatement ps = c.prepareStatement("SELECT a.employeeID, concat(b.firstName, ' ', b.lastName) as 'Name', a.type, a.logDetails, a.logDate FROM user_logs a, users b" + 
-//                        " where a.employeeID = b.employeeID and a.employeeID = ? and month(a.logDate) = ? and year(a.logDate) = ?  ORDER BY a.logDate DESC");
-//                ps.setInt(1, employeeID);
-//                ps.setInt(2, month);
-//                ps.setInt(3, day);
-//                ps.setInt(4, year);
-//                ResultSet rs = ps.executeQuery();
-//                while(rs.next()){
-//                    UserLogs ul = new UserLogs();
-//                    ul.setEmployeeID(rs.getInt(1));
-//                    ul.setEmployeeName(rs.getString(2));
-//                    ul.setType(rs.getString(3));
-//                    ul.setLogDetails(rs.getString(4));
-//                    ul.setLogDate(rs.getTimestamp(5).toString());
-//                    logs.add(ul);
-//                }
-//            }
-//            else if(startDate.equals("") || endDate.equals("")){
-//                int month = 0;
-//                int day = 0;
-//                int year = 0;
-//                if(!startDate.equals("")){
-//                    DateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-//                    Date date = format.parse(startDate);
-//                    cal.setTime(date);
-//                    month = cal.get(Calendar.MONTH) + 1;
-//                    day = cal.get(Calendar.DATE);
-//                    year = cal.get(Calendar.YEAR);
-//                }
-//                else if(!endDate.equals("")){
-//                    DateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-//                    Date date = format.parse(endDate);
-//                    cal.setTime(date);
-//                    month = cal.get(Calendar.MONTH) + 1;
-//                    day = cal.get(Calendar.DATE);
-//                    year = cal.get(Calendar.YEAR);
-//                }
-//                PreparedStatement ps = c.prepareStatement("SELECT a.employeeID, concat(b.firstName, ' ', b.lastName) as 'Name', a.type, a.logDetails, a.logDate FROM user_logs a, users b "+
-//                         "where a.employeeID = b.employeeID and a.employeeID = ? and month(a.logDate) = ? and day(a.logDate) = ? and year(a.logDate)=?  ORDER BY a.logDate DESC"); 
-//                ps.setInt(1, employeeID);
-//                ps.setInt(2, month);
-//                ps.setInt(3, day);
-//                ps.setInt(4, year);
-//                ResultSet rs = ps.executeQuery();
-//                while(rs.next()){
-//                    UserLogs ul = new UserLogs();
-//                    ul.setEmployeeID(rs.getInt(1));
-//                    ul.setEmployeeName(rs.getString(2));
-//                    ul.setType(rs.getString(3));
-//                    ul.setLogDetails(rs.getString(4));
-//                    ul.setLogDate(rs.getTimestamp(5).toString());
-//                    logs.add(ul);
-//                }
-//            }
-//            else{
-//                int startMonth = 0;
-//                int startDay = 0;
-//                int startYear = 0;
-//                int endMonth = 0;
-//                int endDay = 0;
-//                int endYear = 0;
-//
-//                DateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-//                Date dateStart = format.parse(startDate);
-//                Date dateEnd = format.parse(endDate);
-//                cal.setTime(dateStart);
-//                cal2.setTime(dateEnd);
-//                startMonth = cal.get(Calendar.MONTH) + 1;
-//                startDay = cal.get(Calendar.DATE);
-//                startYear = cal.get(Calendar.YEAR);
-//                endMonth = cal2.get(Calendar.MONTH) + 1;
-//                endDay = cal2.get(Calendar.DATE);
-//                endYear = cal2.get(Calendar.YEAR);
-//
-//                PreparedStatement ps = c.prepareStatement("SELECT a.employeeID, concat(b.firstName, ' ', b.lastName) as 'Name', a.type, a.logDetails, a.logDate"+
-//                        " FROM user_logs a, users b where a.employeeID = b.employeeID and a.employeeID = ? and a.logDate BETWEEN '" + startDate + "' AND '" + endDate + "' ORDER BY a.logDate DESC");
-//                ps.setInt(1, employeeID);
-//                ResultSet rs = ps.executeQuery();
-//                while(rs.next()){
-//                    UserLogs ul = new UserLogs();
-//                    ul.setEmployeeID(rs.getInt(1));
-//                    ul.setEmployeeName(rs.getString(2));
-//                    ul.setType(rs.getString(3));
-//                    ul.setLogDetails(rs.getString(4));
-//                    ul.setLogDate(rs.getTimestamp(5).toString());
-//                    logs.add(ul);
-//                }
-//            }
-//        }
-//        else{
-//            if(startDate.equals("") && endDate.equals("")){
-//                cal.setTime(new java.sql.Date(getCurrentCalendar()));
-//                int month = cal.get(Calendar.MONTH) + 1;
-//                int day = cal.get(Calendar.DATE);
-//                int year = cal.get(Calendar.YEAR);
-//                PreparedStatement ps = c.prepareStatement("SELECT a.employeeID, concat(b.firstName, ' ', b.lastName) as 'Name', a.type, a.logDetails, a.logDate FROM user_logs a, users b" + 
-//                        " where a.employeeID = b.employeeID and month(a.logDate) = ? and day(a.logDate) = ? and year(a.logDate) = ?  ORDER BY a.logDate DESC");
-//                ps.setInt(1, month);
-//                ps.setInt(2, day);
-//                ps.setInt(3, year);
-//                ResultSet rs = ps.executeQuery();
-//                while(rs.next()){
-//                    UserLogs ul = new UserLogs();
-//                    ul.setEmployeeID(rs.getInt(1));
-//                    ul.setEmployeeName(rs.getString(2));
-//                    ul.setType(rs.getString(3));
-//                    ul.setLogDetails(rs.getString(4));
-//                    ul.setLogDate(rs.getTimestamp(5).toString());
-//                    logs.add(ul);
-//                }
-//            }
-//            else if(startDate.equals("") || endDate.equals("")){
-//                int month = 0;
-//                int day = 0;
-//                int year = 0;
-//                if(!startDate.equals("")){
-//                    DateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-//                    Date date = format.parse(startDate);
-//                    cal.setTime(date);
-//                    month = cal.get(Calendar.MONTH) + 1;
-//                    day = cal.get(Calendar.DATE);
-//                    year = cal.get(Calendar.YEAR);
-//                }
-//                else if(!endDate.equals("")){
-//                    DateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-//                    Date date = format.parse(endDate);
-//                    cal.setTime(date);
-//                    month = cal.get(Calendar.MONTH) + 1;
-//                    day = cal.get(Calendar.DATE);
-//                    year = cal.get(Calendar.YEAR);
-//                }
-//                PreparedStatement ps = c.prepareStatement("SELECT a.employeeID, concat(b.firstName, ' ', b.lastName) as 'Name', a.type, a.logDetails, a.logDate FROM user_logs a, users b "+
-//                         "where a.employeeID = b.employeeID and month(a.logDate) = ? and day(a.logDate) = ? and year(a.logDate)=? ORDER BY a.logDate DESC");// 
-//                ps.setInt(1, month);
-//                ps.setInt(2, day);
-//                ps.setInt(3, year);
-//                ResultSet rs = ps.executeQuery();
-//                while(rs.next()){
-//                    UserLogs ul = new UserLogs();
-//                    ul.setEmployeeID(rs.getInt(1));
-//                    ul.setEmployeeName(rs.getString(2));
-//                    ul.setType(rs.getString(3));
-//                    ul.setLogDetails(rs.getString(4));
-//                    ul.setLogDate(rs.getTimestamp(5).toString());
-//                    logs.add(ul);
-//                }
-//            }
-//            else{
-//                int startMonth = 0;
-//                int startDay = 0;
-//                int startYear = 0;
-//                int endMonth = 0;
-//                int endDay = 0;
-//                int endYear = 0;
-//
-//                DateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-//                Date dateStart = format.parse(startDate);
-//                Date dateEnd = format.parse(endDate);
-//                cal.setTime(dateStart);
-//                cal2.setTime(dateEnd);
-//                startMonth = cal.get(Calendar.MONTH) + 1;
-//                startDay = cal.get(Calendar.DATE);
-//                startYear = cal.get(Calendar.YEAR);
-//                endMonth = cal2.get(Calendar.MONTH) + 1;
-//                endDay = cal2.get(Calendar.DATE);
-//                endYear = cal2.get(Calendar.YEAR);
-//
-//                PreparedStatement ps = c.prepareStatement("SELECT a.employeeID, concat(b.firstName, ' ', b.lastName) as 'Name', a.type, a.logDetails, a.logDate"+
-//                        " FROM user_logs a, users b where a.employeeID = b.employeeID and a.logDate BETWEEN '" + startDate + "' AND '" + endDate + "'  ORDER BY a.logDate DESC");
-//                
-//                ResultSet rs = ps.executeQuery();
-//                while(rs.next()){
-//                    UserLogs ul = new UserLogs();
-//                    ul.setEmployeeID(rs.getInt(1));
-//                    ul.setEmployeeName(rs.getString(2));
-//                    ul.setType(rs.getString(3));
-//                    ul.setLogDetails(rs.getString(4));
-//                    ul.setLogDate(rs.getTimestamp(5).toString());
-//                    logs.add(ul);
-//                }
-//            }
-//        }
-//        c.close();
-//        return logs;
-//    }
+
     public static void setUserLogStatus(int employeeID, String type, String logDetails) throws ClassNotFoundException, SQLException, ParseException{
         Timestamp dateToday = DB.getDateToday();
         //java.sql.Date.

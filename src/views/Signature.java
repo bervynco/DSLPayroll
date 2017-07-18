@@ -134,7 +134,7 @@ public class Signature extends javax.swing.JFrame {
                             }
                         }
                         else{
-                            JOptionPane.showMessageDialog(panel, "No image drawn yet", "Error", JOptionPane.INFORMATION_MESSAGE);
+                            JOptionPane.showMessageDialog(panel, "No Signature yet", "Error", JOptionPane.INFORMATION_MESSAGE);
                         }
 
                     }

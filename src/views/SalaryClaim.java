@@ -346,10 +346,11 @@ public class SalaryClaim extends javax.swing.JFrame {
             int days = Integer.valueOf(txtDays.getText());
             float overTime = Float.valueOf(txtOvertime.getText());
             float holidayBonus = Float.valueOf(txtHolidayBonus.getText());
-        float taxDeduction = Float.valueOf(txtTaxDeduction.getText());
+            float taxDeduction = Float.valueOf(txtTaxDeduction.getText());
+            String name = lblName.getText();
             float totalSalary = (rate * days) -(sssDeduction + pagibigDeduction + philHealthDeduction + taxDeduction) + bonus - (cashAdvance + loan) + overTime + holidayBonus;
             String status = DB.setSalaryClaim(employeeID, rate, sssDeduction, pagibigDeduction, philHealthDeduction, bonus, cashAdvance, loan, days, 
-                    overTime, totalSalary, taxDeduction, holidayBonus);
+                    overTime, totalSalary, taxDeduction, holidayBonus, name);
             
             
             if(status.equals("Successful")){

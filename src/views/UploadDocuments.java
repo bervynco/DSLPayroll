@@ -262,6 +262,7 @@ public class UploadDocuments extends javax.swing.JFrame {
                 menu.setTitle("DSL Time Logging | Menu");
                 menu.pack();
                 menu.setLocationRelativeTo(null);
+                menu.setExtendedState(JFrame.MAXIMIZED_BOTH); 
                 menu.setDefaultCloseOperation(0);
                 //menu.setUndecorated(true);
                 menu.setVisible(true);

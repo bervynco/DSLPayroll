@@ -5,6 +5,7 @@
  */
 package views;
 
+import controllers.DB;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.event.ActionEvent;
@@ -22,6 +23,7 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import models.User;
+import models.PayrollDetails;
 
 /**
  *
@@ -37,15 +39,22 @@ public class Signature extends javax.swing.JFrame {
     private static boolean isDrawn = false;
     private static String dateStart = null;
     private static String dateEnd = null;
+    private static int payrollEmployeeID = 0;
+    private static String payrollEmployeeName = null;
+    private static PayrollDetails payroll = new PayrollDetails();
+    private static DB db = new DB();
     private static ArrayList<String> employeePages = new ArrayList<String>();
     private final static JPanel panel = new JPanel();
-    public Signature(User user, ArrayList<String> employeePages, String dateStart, String dateEnd) {
+    public Signature(int payrollEmployeeID, String name, User user, ArrayList<String> employeePages, String dateStart, String dateEnd, PayrollDetails payrollDetails) {
         // initComponents();
         this.sessionUser = user;
         this.employeePages = employeePages;
         this.dateStart = dateStart;
         this.dateEnd = dateEnd;
-        Signature.SimplePaintPanel content = new Signature.SimplePaintPanel();
+        this.payroll = payrollDetails;
+        this.payrollEmployeeID = payrollEmployeeID;
+        this.payrollEmployeeName = name;
+        Signature.SimplePaintPanel content = new Signature.SimplePaintPanel(this);
         window.setContentPane(content);
         window.setSize(600,480);
         //window.setLocation(100,100);
@@ -69,17 +78,22 @@ public class Signature extends javax.swing.JFrame {
     private void initComponents() {
 
         jButton1 = new javax.swing.JButton();
+        btnCancel = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
         jButton1.setText("jButton1");
+
+        btnCancel.setText("Cancel");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(284, Short.MAX_VALUE)
+                .addContainerGap(201, Short.MAX_VALUE)
+                .addComponent(btnCancel)
+                .addGap(18, 18, 18)
                 .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 106, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
@@ -87,7 +101,9 @@ public class Signature extends javax.swing.JFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap(266, Short.MAX_VALUE)
-                .addComponent(jButton1)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jButton1)
+                    .addComponent(btnCancel))
                 .addContainerGap())
         );
 
@@ -107,27 +123,28 @@ public class Signature extends javax.swing.JFrame {
       private boolean dragging;
       private Graphics graphicsForDrawing;  
       
-      SimplePaintPanel() {
+      SimplePaintPanel(Signature signature) {
          setBackground(Color.WHITE);
          addMouseListener(this);
          addMouseMotionListener(this);
          JButton saveButton = new JButton("Save");
+         JButton cancelButton = new JButton("Cancel");
             saveButton.addActionListener(new ActionListener(){
                     public void actionPerformed(ActionEvent e){
                         if(isDrawn == true){
                             try {
-                                window.setVisible(false);
-                                JOptionPane.showMessageDialog(panel, "Successfully claimed salary", "Success", JOptionPane.INFORMATION_MESSAGE);
-                                Main list = new Main(sessionUser, employeePages, "Employees");
-                                list.setTitle("DSL Time Logging | Main Menu");
-                                list.pack();
-                                list.setLocationRelativeTo(null);
-                                list.setDefaultCloseOperation(0);
-                                list.setExtendedState(JFrame.MAXIMIZED_BOTH); 
-                                list.setVisible(true);
-                            } catch (SQLException ex) {
-                                Logger.getLogger(Signature.class.getName()).log(Level.SEVERE, null, ex);
+                                DB.setSalaryClaim(payrollEmployeeID, payroll.getRate(), payroll.getSssDeduction(), payroll.getPagibigDeduction(), payroll.getPhilHealthDeduction(),
+                                        payroll.getBonus(), payroll.getCashAdvance(), payroll.getLoan(), payroll.getDays(), payroll.getOverTime(), payroll.getTotalSalary(), payroll.getTaxDeduction(), payroll.getHolidayBonus(), payrollEmployeeName, 1);
+                                signature.setVisible(false);
+                                Main main = new Main(sessionUser, employeePages, "Payroll");
+                                main.setTitle("DSL Time Logging | Main Page");
+                                main.setExtendedState(JFrame.MAXIMIZED_BOTH);
+                                //menu.setUndecorated(true);
+                                main.setLocationRelativeTo(null);
+                                main.setVisible(true);
                             } catch (ClassNotFoundException ex) {
+                                Logger.getLogger(Signature.class.getName()).log(Level.SEVERE, null, ex);
+                            } catch (SQLException ex) {
                                 Logger.getLogger(Signature.class.getName()).log(Level.SEVERE, null, ex);
                             } catch (ParseException ex) {
                                 Logger.getLogger(Signature.class.getName()).log(Level.SEVERE, null, ex);
@@ -139,7 +156,28 @@ public class Signature extends javax.swing.JFrame {
 
                     }
             });
+            cancelButton.addActionListener(new ActionListener(){
+                    public void actionPerformed(ActionEvent e){
+                        try {
+                            signature.setVisible(false);
+                            Main main = new Main(sessionUser, employeePages, "Payroll");
+                            main.setTitle("DSL Time Logging | Main Page");
+                            main.setExtendedState(JFrame.MAXIMIZED_BOTH);
+                            //menu.setUndecorated(true);
+                            main.setLocationRelativeTo(null);
+                            main.setVisible(true);
+                        } catch (SQLException ex) {
+                            Logger.getLogger(Signature.class.getName()).log(Level.SEVERE, null, ex);
+                        } catch (ClassNotFoundException ex) {
+                            Logger.getLogger(Signature.class.getName()).log(Level.SEVERE, null, ex);
+                        } catch (ParseException ex) {
+                            Logger.getLogger(Signature.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+
+                    }
+            });
          this.add(saveButton);
+         this.add(cancelButton);
       }
 
       public void paintComponent(Graphics g) {
@@ -221,6 +259,7 @@ public class Signature extends javax.swing.JFrame {
    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnCancel;
     private javax.swing.JButton jButton1;
     // End of variables declaration//GEN-END:variables
 }

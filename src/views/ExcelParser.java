@@ -37,9 +37,11 @@ public class ExcelParser {
     public void parseExcel(File selectedFile) throws FileNotFoundException, IOException, ParseException, ClassNotFoundException, SQLException{
         // String excelFilePath = "C:\\Users\\L R E\\Desktop\\attn1.xlsx";
         
+        if(selectedFile != null){
+            frame.instantiateLoadBar();
+            frame.setVisible(true);
+        }
         
-        frame.instantiateLoadBar();
-        frame.setVisible(true);
         FileInputStream inputStream = new FileInputStream(selectedFile);
         
         Workbook workbook = new XSSFWorkbook(inputStream);
@@ -50,7 +52,7 @@ public class ExcelParser {
         int lastCell=firstSheet.getRow(0).getLastCellNum();
         
         //String[] array = {"Emp No.", "AC-No.", "Name", "Date", "Clock In", "Clock Out", "ATT_Time"};
-        String[] array = {"Name", "Department", "Date", "Time In"};
+        String[] array = {"Name", "Department", "Date", "Time"};
         List<Integer> columnIDs = new ArrayList<Integer>();
         Cell c;
         DB db = new DB();

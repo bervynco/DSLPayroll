@@ -866,7 +866,7 @@ public class DB {
         return payroll;
     }
     public static String setSalaryClaim(int employeeID, float rate, float sssDeduction, float pagibigDeduction, float philHealthDeduction, 
-            float bonus, float cashAdvance, float loan, int days, float overTime, float totalSalary, float taxDeduction, float holidayBonus, String name) throws ClassNotFoundException, SQLException {
+            float bonus, float cashAdvance, float loan, int days, float overTime, float totalSalary, float taxDeduction, float holidayBonus, String name, int claimed) throws ClassNotFoundException, SQLException {
         Connection c = connect();
         PreparedStatement ps = c.prepareStatement("UPDATE payroll set rate = ?, sssDeduction = ?, pagibigDeduction = ?, philHealthDeduction = ?," +
             " bonus = ?, cashAdvance = ?, loan = ?, days = ?, overTime = ?, totalSalary = ?, taxDeduction = ?, holidayBonus = ?, claimed = ? where employeeID = ?");
@@ -884,7 +884,7 @@ public class DB {
         ps.setFloat(10, totalSalary);
         ps.setFloat(11, taxDeduction);
         ps.setFloat(12, holidayBonus);
-        ps.setInt(13, 1);
+        ps.setInt(13, claimed);
         ps.setInt(14, employeeID);
         
         int rows = ps.executeUpdate();

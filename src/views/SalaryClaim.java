@@ -27,6 +27,7 @@ public class SalaryClaim extends javax.swing.JFrame {
     private static User sessionUser = null;
     PayrollDetails payrollDetails = new PayrollDetails();
     private static int employeeID = 0;
+    
     private static String dateStart = null;
     private static String dateEnd = null;
     private static ArrayList<String> employeePages = new ArrayList<String>();
@@ -348,14 +349,29 @@ public class SalaryClaim extends javax.swing.JFrame {
             float holidayBonus = Float.valueOf(txtHolidayBonus.getText());
             float taxDeduction = Float.valueOf(txtTaxDeduction.getText());
             String name = lblName.getText();
-            float totalSalary = (rate * days) -(sssDeduction + pagibigDeduction + philHealthDeduction + taxDeduction) + bonus - (cashAdvance + loan) + overTime + holidayBonus;
+            float totalSalary = (rate * days) -(sssDeduction + pagibigDeduction + philHealthDeduction + taxDeduction) + bonus - (cashAdvance + loan) + (overTime * rate) + holidayBonus;
+//            Signature signature = new Signature(employeeID, name, this.sessionUser, this.employeePages, this.dateStart, this.dateEnd, payrollDetails);
+
             String status = DB.setSalaryClaim(employeeID, rate, sssDeduction, pagibigDeduction, philHealthDeduction, bonus, cashAdvance, loan, days, 
-                    overTime, totalSalary, taxDeduction, holidayBonus, name);
+                    overTime, totalSalary, taxDeduction, holidayBonus, name, 0);
             
             
             if(status.equals("Successful")){
                 this.setVisible(false);
-                Signature signature = new Signature(this.sessionUser, this.employeePages, this.dateStart, this.dateEnd);
+                DB db = new DB();
+                payrollDetails.setRate(rate);
+                payrollDetails.setSssDeduction(sssDeduction);
+                payrollDetails.setPagibigDeduction(pagibigDeduction);
+                payrollDetails.setPhilHealthDeduction(philHealthDeduction);
+                payrollDetails.setBonus(bonus);
+                payrollDetails.setCashAdvance(cashAdvance);
+                payrollDetails.setLoan(loan);
+                payrollDetails.setDays(days);
+                payrollDetails.setOverTime(overTime * rate);
+                payrollDetails.setTotalSalary(totalSalary);
+                payrollDetails.setTaxDeduction(taxDeduction);
+                Signature signature = new Signature(employeeID, name, this.sessionUser, this.employeePages, this.dateStart, this.dateEnd, payrollDetails);
+                
                 signature.setVisible(true);
 //                EmployeeList list;
 //                list = new EmployeeList(this.sessionUser, this.employeePages, this.dateStart, this.dateEnd);
@@ -370,9 +386,9 @@ public class SalaryClaim extends javax.swing.JFrame {
                 lblStatus.setHorizontalAlignment(JLabel.CENTER);
                 lblStatus.setForeground(Color.red);
             }
-        } catch (ClassNotFoundException ex) {
-            Logger.getLogger(SalaryClaim.class.getName()).log(Level.SEVERE, null, ex);
         } catch (SQLException ex) {
+            Logger.getLogger(SalaryClaim.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (ClassNotFoundException ex) {
             Logger.getLogger(SalaryClaim.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_btnSaveActionPerformed
@@ -425,7 +441,7 @@ public class SalaryClaim extends javax.swing.JFrame {
         float overTime = Float.valueOf(txtOvertime.getText());
         float taxDeduction = Float.valueOf(txtTaxDeduction.getText());
         float holidayBonus = Float.valueOf(txtHolidayBonus.getText());
-        float totalSalary = (rate * days) -(sssDeduction + pagibigDeduction + philHealthDeduction + taxDeduction) + bonus - (cashAdvance + loan) + overTime + holidayBonus;
+        float totalSalary = (rate * days) -(sssDeduction + pagibigDeduction + philHealthDeduction + taxDeduction) + bonus - (cashAdvance + loan) + (overTime * rate) + holidayBonus;
         lblSalary.setText(Float.toString(totalSalary));
         lblSalary.setFont(new Font("Serif", Font.PLAIN, 24));
         lblSalary.setForeground(new Color(1, 169, 130));
@@ -442,7 +458,7 @@ public class SalaryClaim extends javax.swing.JFrame {
         payrollDetails.setCashAdvance(cashAdvance);
         payrollDetails.setLoan(loan);
         payrollDetails.setDays(days);
-        payrollDetails.setOverTime(overTime);
+        payrollDetails.setOverTime(overTime * rate);
         payrollDetails.setTotalSalary(totalSalary);
         payrollDetails.setTaxDeduction(taxDeduction);
         

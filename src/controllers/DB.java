@@ -326,20 +326,34 @@ public class DB {
         
         return uploadList;
     }
-    public static List<PayrollDetails> getAllPayroll() throws ClassNotFoundException, SQLException{
+    public static List<PayrollDetails> getAllPayroll(int month, int year, int isArchived) throws ClassNotFoundException, SQLException{
         Connection c = connect();
         Date date = new Date();
         Calendar cal = Calendar.getInstance();
         cal.setTime(date);
-        int month = cal.get(Calendar.MONTH);
-        int year = cal.get(Calendar.YEAR);
+        
+//        int month = cal.get(Calendar.MONTH);
+//        int year = cal.get(Calendar.YEAR);
+        System.out.println("ARCHIVED" + isArchived + "LAH");
+        String table = null;
+        String condition = null;
+        if(isArchived == 0){
+            table = "payroll";
+            condition = "where a.claimed = 0 ";
+        }
+        else {
+            table = "payroll_history";
+            condition = "where a.claimed = 1 and month(claimDate) = ? and year(claimDate) = ? ";
+        }
         PreparedStatement ps = c.prepareStatement("SELECT a.payrollID, a.employeeID, a.name, a.rate, a.sssDeduction, a.pagibigDeduction, a.philHealthDeduction,"+
                                                     " a.bonus, a.cashAdvance, a.loan, a.days, a.overTime, a.taxDeduction, a.holidayBonus, a.totalSalary, a.claimed, a.claimDate "+
-                                                    " FROM payroll a where a.claimed = 0 ORDER BY employeeID DESC");
-        //and month(a.claimDate) = ? and year(a.claimDate) = ?  
-//        ps.setInt(1, month+1);
-//        ps.setInt(2, year);
-//          
+                                                    " FROM " + table +" a " + condition + "ORDER BY employeeID DESC");
+        
+        if(isArchived == 1){
+            ps.setInt(1, month);
+            ps.setInt(2, year);
+        }
+        
         List<PayrollDetails> payrollList = new ArrayList<PayrollDetails>();
         ResultSet rs = ps.executeQuery();
         while(rs.next()){

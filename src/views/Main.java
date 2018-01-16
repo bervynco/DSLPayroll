@@ -15,8 +15,10 @@ import javax.swing.JFrame;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.JFileChooser;
 import controllers.DB;
+import java.awt.Dimension;
 import java.io.File;
 import java.io.IOException;
+import java.util.Calendar;
 import java.util.regex.Pattern;
 import models.User;
 import models.UserLogs;
@@ -102,7 +104,10 @@ public class Main extends javax.swing.JFrame {
         }
         else if(currentMenu.equals("Payroll")){
             List<PayrollDetails> payrollDetails = new ArrayList<PayrollDetails>();
-            payrollDetails = DB.getAllPayroll();
+            Calendar cal = Calendar.getInstance();
+            int month = cal.get(Calendar.MONTH);
+            int year = cal.get(Calendar.YEAR);
+            payrollDetails = DB.getAllPayroll(month, year, 0);
         
             model.addColumn("Employee ID");
             model.addColumn("Name");
@@ -714,12 +719,13 @@ public class Main extends javax.swing.JFrame {
         try {
             // TODO add your handling code here:
             this.currentMenu = "Payroll";
-            btnEdit.setVisible(false);
+            btnEdit.setVisible(true);
             btnDelete.setVisible(false);
             btnAdd.setVisible(true);
             btnExport.setVisible(true);
             btnAdd.setLabel("Generate Payout");
             lblTitle.setText("List of Payroll");
+            btnEdit.setLabel("View Archives");
             DefaultTableModel model = this.FillTable(this.currentMenu);
             tableList.setModel(model);
         } catch (SQLException ex) {
@@ -866,6 +872,23 @@ public class Main extends javax.swing.JFrame {
         else if(this.currentMenu.equals("Upload Document")){
             
         }
+        else if(this.currentMenu.equals("Payroll")){
+            try {
+                ArrayList<String>employeePages = null;
+                ViewArchives edit = new ViewArchives(this.sessionUser, employeePages);
+                edit.setTitle("DSL Time Logging | View Archives");
+                edit.pack();
+                edit.setLocationRelativeTo(null);
+                edit.setDefaultCloseOperation(0);
+                edit.setVisible(true);
+            } catch (SQLException ex) {
+                Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (ClassNotFoundException ex) {
+                Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (ParseException ex) {
+                Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
         else if(this.currentMenu.equals("Notes")){
 //            try {
 //                ViewNotes view = new ViewNotes(this.sessionUser, this.employeePages);
@@ -882,24 +905,28 @@ public class Main extends javax.swing.JFrame {
 //                Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
 //            }
         }
+        
+        else if(this.currentMenu.equals("Payroll")){
+            
+        }
         else;
     }//GEN-LAST:event_btnEditActionPerformed
 
     private void btnDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDeleteActionPerformed
         // TODO add your handling code here:
-        if(this.currentMenu.equals("Employees")){
-            
-        }
-        else if(this.currentMenu.equals("Claim Salary")){
-            
-        }
-        else if(this.currentMenu.equals("Upload Document")){
-            
-        }
-        else if(this.currentMenu.equals("Notes")){
-            
-        }
-        else;
+//        if(this.currentMenu.equals("Employees")){
+//            
+//        }
+//        else if(this.currentMenu.equals("Claim Salary")){
+//            
+//        }
+//        else if(this.currentMenu.equals("Upload Document")){
+//            
+//        }
+//        else if(this.currentMenu.equals("Notes")){
+//            
+//        }
+//        else;
     }//GEN-LAST:event_btnDeleteActionPerformed
 
     private void comboBoxEmployeesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_comboBoxEmployeesActionPerformed

@@ -349,10 +349,16 @@ public class SalaryClaim extends javax.swing.JFrame {
             float holidayBonus = Float.valueOf(txtHolidayBonus.getText());
             float taxDeduction = Float.valueOf(txtTaxDeduction.getText());
             String name = lblName.getText();
-            float totalSalary = (rate * days) -(sssDeduction + pagibigDeduction + philHealthDeduction + taxDeduction) + bonus - (cashAdvance + loan) + (overTime * rate) + holidayBonus;
+            
+            if(overTime > 0){
+                overTime = (rate/8) * overTime;
+            }
+            
+            float totalSalary = (rate * days) -(sssDeduction + pagibigDeduction + philHealthDeduction + taxDeduction) + (bonus * days) - (cashAdvance + loan) + (overTime) + holidayBonus;
 //            Signature signature = new Signature(employeeID, name, this.sessionUser, this.employeePages, this.dateStart, this.dateEnd, payrollDetails);
-
-            String status = DB.setSalaryClaim(employeeID, rate, sssDeduction, pagibigDeduction, philHealthDeduction, bonus, cashAdvance, loan, days, 
+            
+            
+            String status = DB.setSalaryClaim(employeeID, rate, sssDeduction, pagibigDeduction, philHealthDeduction, (bonus * days), cashAdvance, loan, days, 
                     overTime, totalSalary, taxDeduction, holidayBonus, name, 0);
             
             
@@ -441,7 +447,11 @@ public class SalaryClaim extends javax.swing.JFrame {
         float overTime = Float.valueOf(txtOvertime.getText());
         float taxDeduction = Float.valueOf(txtTaxDeduction.getText());
         float holidayBonus = Float.valueOf(txtHolidayBonus.getText());
-        float totalSalary = (rate * days) -(sssDeduction + pagibigDeduction + philHealthDeduction + taxDeduction) + bonus - (cashAdvance + loan) + (overTime * rate) + holidayBonus;
+        
+        if(overTime > 0){
+            overTime = (rate/8) * overTime;
+        }
+        float totalSalary = (rate * days) -(sssDeduction + pagibigDeduction + philHealthDeduction + taxDeduction) + (bonus*days) - (cashAdvance + loan) + (overTime) + holidayBonus;
         lblSalary.setText(Float.toString(totalSalary));
         lblSalary.setFont(new Font("Serif", Font.PLAIN, 24));
         lblSalary.setForeground(new Color(1, 169, 130));

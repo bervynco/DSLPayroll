@@ -326,7 +326,7 @@ public class DB {
         
         return uploadList;
     }
-    public static List<PayrollDetails> getAllPayroll(int month, int year, int isArchived) throws ClassNotFoundException, SQLException{
+    public static List<PayrollDetails> getAllPayroll(int employeeID, int month, int year, int isArchived) throws ClassNotFoundException, SQLException{
         Connection c = connect();
         Date date = new Date();
         Calendar cal = Calendar.getInstance();
@@ -339,12 +339,27 @@ public class DB {
         String condition = null;
         if(isArchived == 0){
             table = "payroll";
-            condition = "where a.claimed = 0 ";
+            
+            if(employeeID == 0){
+                condition = "where a.claimed = 0 ";
+            }
+            else{
+                condition = "where a.claimed = 0 and a.employeeID = ? ";
+            }
+            
         }
         else {
             table = "payroll_history";
-            condition = "where a.claimed = 1 and month(claimDate) = ? and year(claimDate) = ? ";
+            if(employeeID == 0){
+                condition = "where a.claimed = 1 and month(claimDate) = ? and year(claimDate) = ? ";
+            }
+            else {
+                condition = "where a.claimed = 1 and month(claimDate) = ? and year(claimDate) = ? and a.employeeID = ? ";
+            }
         }
+        
+        
+        
         PreparedStatement ps = c.prepareStatement("SELECT a.payrollID, a.employeeID, a.name, a.rate, a.sssDeduction, a.pagibigDeduction, a.philHealthDeduction,"+
                                                     " a.bonus, a.cashAdvance, a.loan, a.days, a.overTime, a.taxDeduction, a.holidayBonus, a.totalSalary, a.claimed, a.claimDate "+
                                                     " FROM " + table +" a " + condition + "ORDER BY employeeID DESC");
@@ -352,6 +367,15 @@ public class DB {
         if(isArchived == 1){
             ps.setInt(1, month);
             ps.setInt(2, year);
+            if(employeeID != 0){
+                ps.setInt(3, employeeID);
+            }
+        }
+        else {
+            if(employeeID != 0){
+                ps.setInt(1, employeeID);
+            }
+            
         }
         
         List<PayrollDetails> payrollList = new ArrayList<PayrollDetails>();

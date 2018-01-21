@@ -34,6 +34,16 @@ public class ViewArchives extends javax.swing.JFrame {
      */
     private static User sessionUser = null;
     private static ArrayList<String> employeePages = new ArrayList<String>();
+    private static int currentEmployeeFilter = 0;
+    public void FillEmployeesComboBox() throws SQLException, ClassNotFoundException{
+        List<User> employees = new ArrayList<User>();
+        employees = DB.getUsers();
+        comboBoxEmployees.addItem("No Filter");
+        for(int i = 0; i < employees.size(); i++){
+            String fullName = employees.get(i).getFirstName()+ " " + employees.get(i).getLastName();
+            comboBoxEmployees.addItem(fullName);
+        }
+    }
     public DefaultTableModel FillTable(int month, int year) throws SQLException, ClassNotFoundException, ParseException{
         DefaultTableModel model = new DefaultTableModel();
         model.setRowCount(0);
@@ -43,7 +53,7 @@ public class ViewArchives extends javax.swing.JFrame {
             Calendar now = Calendar.getInstance();   // Gets the current date and time
             year = now.get(Calendar.YEAR);       // The current year
         }
-        payrollDetails = DB.getAllPayroll(month, year, 1);
+        payrollDetails = DB.getAllPayroll(this.currentEmployeeFilter, month, year, 1);
 
         model.addColumn("Employee ID");
         model.addColumn("Name");
@@ -81,6 +91,7 @@ public class ViewArchives extends javax.swing.JFrame {
     
     public ViewArchives(User user, ArrayList<String> employeePages) throws SQLException, ClassNotFoundException, ParseException{
         initComponents();
+        this.FillEmployeesComboBox();
         Calendar cal = Calendar.getInstance();
         int month = cal.get(Calendar.MONTH);
         int year = cal.get(Calendar.YEAR);
@@ -109,6 +120,8 @@ public class ViewArchives extends javax.swing.JFrame {
         txtYear = new javax.swing.JTextField();
         jButton1 = new javax.swing.JButton();
         jButton2 = new javax.swing.JButton();
+        jLabel3 = new javax.swing.JLabel();
+        comboBoxEmployees = new javax.swing.JComboBox<>();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setSize(new java.awt.Dimension(500, 500));
@@ -188,6 +201,18 @@ public class ViewArchives extends javax.swing.JFrame {
             }
         });
 
+        jLabel3.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+        jLabel3.setText("Filter:");
+
+        comboBoxEmployees.setEditable(true);
+        comboBoxEmployees.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+        comboBoxEmployees.setModel(new javax.swing.DefaultComboBoxModel<>());
+        comboBoxEmployees.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                comboBoxEmployeesActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -209,21 +234,30 @@ public class ViewArchives extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(txtYear, javax.swing.GroupLayout.PREFERRED_SIZE, 74, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
+                        .addComponent(jLabel3)
+                        .addGap(18, 18, 18)
+                        .addComponent(comboBoxEmployees, javax.swing.GroupLayout.PREFERRED_SIZE, 239, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addContainerGap(111, Short.MAX_VALUE))))
+                        .addContainerGap())))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jButton1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jButton2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(comboBoxMonth, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addComponent(jLabel2)
                         .addComponent(txtYear)
-                        .addComponent(jLabel1)))
+                        .addComponent(jLabel1)
+                        .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(jLabel3)
+                            .addComponent(comboBoxEmployees, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(0, 0, Short.MAX_VALUE)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 499, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(82, 82, 82))
@@ -260,16 +294,39 @@ public class ViewArchives extends javax.swing.JFrame {
         this.setVisible(false);
     }//GEN-LAST:event_jButton2ActionPerformed
 
+    private void comboBoxEmployeesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_comboBoxEmployeesActionPerformed
+//        int month = comboBoxMonth.getSelectedIndex() + 1;
+//        int year = Integer.valueOf(txtYear.getText());
+        try {
+            // TODO add your handling code here:
+            String employeeName = (String) comboBoxEmployees.getSelectedItem();
+            if(employeeName.equals("No Filter")){
+                this.currentEmployeeFilter = 0;
+            }
+            else{
+                this.currentEmployeeFilter = DB.getEmployeeIDFromName(employeeName);
+            }
+//            DefaultTableModel model = this.FillTable(month, year);
+//            tableList.setModel(model);
+        } catch (ClassNotFoundException ex) {
+            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (SQLException ex) {
+            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_comboBoxEmployeesActionPerformed
+
     /**
      * @param args the command line arguments
      */
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JComboBox<String> comboBoxEmployees;
     private javax.swing.JComboBox<String> comboBoxMonth;
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable tableList;
     private javax.swing.JTextField txtYear;

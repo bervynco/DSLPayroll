@@ -107,7 +107,7 @@ public class Main extends javax.swing.JFrame {
             Calendar cal = Calendar.getInstance();
             int month = cal.get(Calendar.MONTH);
             int year = cal.get(Calendar.YEAR);
-            payrollDetails = DB.getAllPayroll(month, year, 0);
+            payrollDetails = DB.getAllPayroll(this.currentEmployeeFilter, month, year, 0);
         
             model.addColumn("Employee ID");
             model.addColumn("Name");

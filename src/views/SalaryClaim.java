@@ -43,7 +43,7 @@ public class SalaryClaim extends javax.swing.JFrame {
         txtBonus.setText(Float.toString(payroll.getBonus()));
         txtCashAdvance.setText(Float.toString(payroll.getCashAdvance()));
         txtLoan.setText(Float.toString(payroll.getLoan()));
-        txtDays.setText(Integer.toString(payroll.getDays()));
+        txtDays.setText(Float.toString(payroll.getDays()));
         txtTaxDeduction.setText(Float.toString(payroll.getTaxDeduction()));
         txtOvertime.setText(Float.toString(payroll.getOverTime()));
         txtHolidayBonus.setText(Float.toString(payroll.getHolidayBonus()));
@@ -344,10 +344,11 @@ public class SalaryClaim extends javax.swing.JFrame {
             float bonus = Float.valueOf(txtBonus.getText());
             float cashAdvance = Float.valueOf(txtCashAdvance.getText());
             float loan = Float.valueOf(txtLoan.getText());
-            int days = Integer.valueOf(txtDays.getText());
+            float days = Float.valueOf(txtDays.getText());
             float overTime = Float.valueOf(txtOvertime.getText());
             float holidayBonus = Float.valueOf(txtHolidayBonus.getText());
             float taxDeduction = Float.valueOf(txtTaxDeduction.getText());
+            
             String name = lblName.getText();
             
             if(overTime > 0){
@@ -355,43 +356,46 @@ public class SalaryClaim extends javax.swing.JFrame {
             }
             
             float totalSalary = (rate * days) -(sssDeduction + pagibigDeduction + philHealthDeduction + taxDeduction) + (bonus * days) - (cashAdvance + loan) + (overTime) + holidayBonus;
-//            Signature signature = new Signature(employeeID, name, this.sessionUser, this.employeePages, this.dateStart, this.dateEnd, payrollDetails);
+            this.setVisible(false);
             
-            
+            payrollDetails.setRate(rate);
+            payrollDetails.setSssDeduction(sssDeduction);
+            payrollDetails.setPagibigDeduction(pagibigDeduction);
+            payrollDetails.setPhilHealthDeduction(philHealthDeduction);
+            payrollDetails.setBonus(bonus);
+            payrollDetails.setCashAdvance(cashAdvance);
+            payrollDetails.setLoan(loan);
+            payrollDetails.setDays(days);
+            payrollDetails.setOverTime(overTime * rate);
+            payrollDetails.setTotalSalary(totalSalary);
+            payrollDetails.setTaxDeduction(taxDeduction);
+            Signature signature = new Signature(employeeID, name, this.sessionUser, this.employeePages, this.dateStart, this.dateEnd, payrollDetails);
+            signature.setVisible(true);
+//            Signature signature = new Signature(employeeID, name, this.sessionUser, this.employeePages, this.dateStart, this.dateEnd, payrollDetails);            
             String status = DB.setSalaryClaim(employeeID, rate, sssDeduction, pagibigDeduction, philHealthDeduction, (bonus * days), cashAdvance, loan, days, 
-                    overTime, totalSalary, taxDeduction, holidayBonus, name, 0);
+                    overTime, totalSalary, taxDeduction, holidayBonus, name, 0, 0);
             
             
-            if(status.equals("Successful")){
-                this.setVisible(false);
-                DB db = new DB();
-                payrollDetails.setRate(rate);
-                payrollDetails.setSssDeduction(sssDeduction);
-                payrollDetails.setPagibigDeduction(pagibigDeduction);
-                payrollDetails.setPhilHealthDeduction(philHealthDeduction);
-                payrollDetails.setBonus(bonus);
-                payrollDetails.setCashAdvance(cashAdvance);
-                payrollDetails.setLoan(loan);
-                payrollDetails.setDays(days);
-                payrollDetails.setOverTime(overTime * rate);
-                payrollDetails.setTotalSalary(totalSalary);
-                payrollDetails.setTaxDeduction(taxDeduction);
-                Signature signature = new Signature(employeeID, name, this.sessionUser, this.employeePages, this.dateStart, this.dateEnd, payrollDetails);
-                
-                signature.setVisible(true);
-//                EmployeeList list;
-//                list = new EmployeeList(this.sessionUser, this.employeePages, this.dateStart, this.dateEnd);
-//                list.setTitle("DSL Time Logging | List of Emoloyees");
-//                list.pack();
-//                list.setLocationRelativeTo(null);
-//                list.setDefaultCloseOperation(0);
-//                list.setVisible(true);
-            }
-            else{
-                lblStatus.setText("Error. Please Contact System Administrator");
-                lblStatus.setHorizontalAlignment(JLabel.CENTER);
-                lblStatus.setForeground(Color.red);
-            }
+//            if(status.equals("Successful")){
+//                this.setVisible(false);
+//                DB db = new DB();
+//                payrollDetails.setRate(rate);
+//                payrollDetails.setSssDeduction(sssDeduction);
+//                payrollDetails.setPagibigDeduction(pagibigDeduction);
+//                payrollDetails.setPhilHealthDeduction(philHealthDeduction);
+//                payrollDetails.setBonus(bonus);
+//                payrollDetails.setCashAdvance(cashAdvance);
+//                payrollDetails.setLoan(loan);
+//                payrollDetails.setDays(days);
+//                payrollDetails.setOverTime(overTime * rate);
+//                payrollDetails.setTotalSalary(totalSalary);
+//                payrollDetails.setTaxDeduction(taxDeduction);
+//            }
+//            else{
+//                lblStatus.setText("Error. Please Contact System Administrator");
+//                lblStatus.setHorizontalAlignment(JLabel.CENTER);
+//                lblStatus.setForeground(Color.red);
+//            }
         } catch (SQLException ex) {
             Logger.getLogger(SalaryClaim.class.getName()).log(Level.SEVERE, null, ex);
         } catch (ClassNotFoundException ex) {
@@ -443,7 +447,7 @@ public class SalaryClaim extends javax.swing.JFrame {
         float bonus = Float.valueOf(txtBonus.getText());
         float cashAdvance = Float.valueOf(txtCashAdvance.getText());
         float loan = Float.valueOf(txtLoan.getText());
-        int days = Integer.valueOf(txtDays.getText());
+        float days = Float.valueOf(txtDays.getText());
         float overTime = Float.valueOf(txtOvertime.getText());
         float taxDeduction = Float.valueOf(txtTaxDeduction.getText());
         float holidayBonus = Float.valueOf(txtHolidayBonus.getText());

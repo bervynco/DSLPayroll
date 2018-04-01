@@ -390,7 +390,7 @@ public class GenerateReport {
                         tablePayroll.addCell(Float.toString(payrollDetails.get(k).getBonus()));
                         tablePayroll.addCell(Float.toString(payrollDetails.get(k).getCashAdvance()));
                         tablePayroll.addCell(Float.toString(payrollDetails.get(k).getLoan()));
-                        tablePayroll.addCell(Integer.toString(payrollDetails.get(k).getDays()));
+                        tablePayroll.addCell(Float.toString(payrollDetails.get(k).getDays()));
                         tablePayroll.addCell(Float.toString(payrollDetails.get(k).getOverTime()));
                         tablePayroll.addCell(Float.toString(payrollDetails.get(k).getTaxDeduction()));
                         tablePayroll.addCell(Float.toString(payrollDetails.get(k).getHolidayBonus()));
@@ -492,7 +492,7 @@ public class GenerateReport {
                     tablePayroll.addCell(Float.toString(payrollDetails.get(k).getBonus()));
                     tablePayroll.addCell(Float.toString(payrollDetails.get(k).getCashAdvance()));
                     tablePayroll.addCell(Float.toString(payrollDetails.get(k).getLoan()));
-                    tablePayroll.addCell(Integer.toString(payrollDetails.get(k).getDays()));
+                    tablePayroll.addCell(Float.toString(payrollDetails.get(k).getDays()));
                     tablePayroll.addCell(Float.toString(payrollDetails.get(k).getOverTime()));
                     tablePayroll.addCell(Float.toString(payrollDetails.get(k).getTaxDeduction()));
                     tablePayroll.addCell(Float.toString(payrollDetails.get(k).getHolidayBonus()));
@@ -651,7 +651,7 @@ public class GenerateReport {
                         tablePayroll.addCell(Float.toString(payrollDetails.get(k).getBonus()));
                         tablePayroll.addCell(Float.toString(payrollDetails.get(k).getCashAdvance()));
                         tablePayroll.addCell(Float.toString(payrollDetails.get(k).getLoan()));
-                        tablePayroll.addCell(Integer.toString(payrollDetails.get(k).getDays()));
+                        tablePayroll.addCell(Float.toString(payrollDetails.get(k).getDays()));
                         tablePayroll.addCell(Float.toString(payrollDetails.get(k).getOverTime()));
                         tablePayroll.addCell(Float.toString(payrollDetails.get(k).getTaxDeduction()));
                         tablePayroll.addCell(Float.toString(payrollDetails.get(k).getHolidayBonus()));
@@ -824,7 +824,7 @@ public class GenerateReport {
                     tablePayroll.addCell(Float.toString(payrollDetails.get(k).getBonus()));
                     tablePayroll.addCell(Float.toString(payrollDetails.get(k).getCashAdvance()));
                     tablePayroll.addCell(Float.toString(payrollDetails.get(k).getLoan()));
-                    tablePayroll.addCell(Integer.toString(payrollDetails.get(k).getDays()));
+                    tablePayroll.addCell(Float.toString(payrollDetails.get(k).getDays()));
                     tablePayroll.addCell(Float.toString(payrollDetails.get(k).getOverTime()));
                     tablePayroll.addCell(Float.toString(payrollDetails.get(k).getTaxDeduction()));
                     tablePayroll.addCell(Float.toString(payrollDetails.get(k).getHolidayBonus()));

@@ -134,7 +134,7 @@ public class Signature extends javax.swing.JFrame {
                         if(isDrawn == true){
                             try {
                                 DB.setSalaryClaim(payrollEmployeeID, payroll.getRate(), payroll.getSssDeduction(), payroll.getPagibigDeduction(), payroll.getPhilHealthDeduction(),
-                                        payroll.getBonus(), payroll.getCashAdvance(), payroll.getLoan(), payroll.getDays(), payroll.getOverTime(), payroll.getTotalSalary(), payroll.getTaxDeduction(), payroll.getHolidayBonus(), payrollEmployeeName, 1);
+                                        payroll.getBonus(), payroll.getCashAdvance(), payroll.getLoan(), payroll.getDays(), payroll.getOverTime(), payroll.getTotalSalary(), payroll.getTaxDeduction(), payroll.getHolidayBonus(), payrollEmployeeName, 1, 1);
                                 signature.setVisible(false);
                                 Main main = new Main(sessionUser, employeePages, "Payroll");
                                 main.setTitle("DSL Time Logging | Main Page");

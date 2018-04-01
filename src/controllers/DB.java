@@ -53,19 +53,19 @@ import models.UserLogs;
  * @author L R E
  */
 public class DB {
-//    private static String user = "dsl";
-//    private static String pass = "DslDatabase";
-//    private static String host = "localhost";
-//    private static String port = "3306";
-//    private static String url = "jdbc:mysql://" + host + ":" + port + "/dsl";
-//    private static final SimpleDateFormat sdf = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss");
-    
-    private static String user = "root";
-    private static String pass = "password";
+    private static String user = "dsl";
+    private static String pass = "DslDatabase";
     private static String host = "localhost";
     private static String port = "3306";
     private static String url = "jdbc:mysql://" + host + ":" + port + "/dsl";
     private static final SimpleDateFormat sdf = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss");
+    
+//    private static String user = "root";
+//    private static String pass = "password";
+//    private static String host = "localhost";
+//    private static String port = "3306";
+//    private static String url = "jdbc:mysql://" + host + ":" + port + "/dsl";
+//    private static final SimpleDateFormat sdf = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss");
     
     public static Connection connect() throws ClassNotFoundException, SQLException {
 
@@ -157,7 +157,7 @@ public class DB {
         
         PreparedStatement ps = c.prepareStatement("Select employeeID, firstName, lastName, address, telephoneNumber, mobileNumber, rate, timeIn," + 
                 " timeOut, role, fingerPrint, SSSNumber, philHealthNumber, pagibigNumber, SSSDeduction, philHealthDeduction, pagibigDeduction,"+
-                " tinNumber, taxDeduction, pages, noLates, noMemos, noAbsences from users");
+                " tinNumber, taxDeduction, pages, noLates, noMemos, noAbsences from users order by firstname asc");
         
         ResultSet rs = ps.executeQuery();
         
@@ -362,7 +362,7 @@ public class DB {
         
         PreparedStatement ps = c.prepareStatement("SELECT a.payrollID, a.employeeID, a.name, a.rate, a.sssDeduction, a.pagibigDeduction, a.philHealthDeduction,"+
                                                     " a.bonus, a.cashAdvance, a.loan, a.days, a.overTime, a.taxDeduction, a.holidayBonus, a.totalSalary, a.claimed, a.claimDate "+
-                                                    " FROM " + table +" a " + condition + "ORDER BY employeeID DESC");
+                                                    " FROM " + table +" a " + condition + "ORDER BY a.name ASC");
         
         if(isArchived == 1){
             ps.setInt(1, month);
@@ -894,7 +894,7 @@ public class DB {
             payroll.setBonus(rs.getFloat(8));
             payroll.setCashAdvance(rs.getFloat(9));
             payroll.setLoan(rs.getFloat(10));
-            payroll.setDays(rs.getInt(11));
+            payroll.setDays(rs.getFloat(11));
             payroll.setOverTime(rs.getInt(12));
             payroll.setHolidayBonus(rs.getFloat(13));
             payroll.setTotalSalary(rs.getFloat(14));
@@ -904,73 +904,91 @@ public class DB {
         return payroll;
     }
     public static String setSalaryClaim(int employeeID, float rate, float sssDeduction, float pagibigDeduction, float philHealthDeduction, 
-            float bonus, float cashAdvance, float loan, int days, float overTime, float totalSalary, float taxDeduction, float holidayBonus, String name, int claimed) throws ClassNotFoundException, SQLException {
+            float bonus, float cashAdvance, float loan, float days, float overTime, float totalSalary, float taxDeduction, float holidayBonus, 
+            String name, int claimed, int claimNow) throws ClassNotFoundException, SQLException {
         Connection c = connect();
-        PreparedStatement ps = c.prepareStatement("UPDATE payroll set rate = ?, sssDeduction = ?, pagibigDeduction = ?, philHealthDeduction = ?," +
+        if(claimNow == 1)
+        {
+            PreparedStatement ps = c.prepareStatement("UPDATE payroll set rate = ?, sssDeduction = ?, pagibigDeduction = ?, philHealthDeduction = ?," +
             " bonus = ?, cashAdvance = ?, loan = ?, days = ?, overTime = ?, totalSalary = ?, taxDeduction = ?, holidayBonus = ?, claimed = ? where employeeID = ?");
         
         
-        ps.setFloat(1, rate);
-        ps.setFloat(2, sssDeduction);
-        ps.setFloat(3, pagibigDeduction);
-        ps.setFloat(4, philHealthDeduction);
-        ps.setFloat(5, bonus);
-        ps.setFloat(6, cashAdvance);
-        ps.setFloat(7, loan);
-        ps.setInt(8, days);
-        ps.setFloat(9, overTime);
-        ps.setFloat(10, totalSalary);
-        ps.setFloat(11, taxDeduction);
-        ps.setFloat(12, holidayBonus);
-        ps.setInt(13, claimed);
-        ps.setInt(14, employeeID);
-        
-        int rows = ps.executeUpdate();
+            ps.setFloat(1, rate);
+            ps.setFloat(2, sssDeduction);
+            ps.setFloat(3, pagibigDeduction);
+            ps.setFloat(4, philHealthDeduction);
+            ps.setFloat(5, bonus);
+            ps.setFloat(6, cashAdvance);
+            ps.setFloat(7, loan);
+            ps.setFloat(8, days);
+            ps.setFloat(9, overTime);
+            ps.setFloat(10, totalSalary);
+            ps.setFloat(11, taxDeduction);
+            ps.setFloat(12, holidayBonus);
+            ps.setInt(13, claimed);
+            ps.setInt(14, employeeID);
 
-        if(rows > 0){
-            PreparedStatement psHistory = c.prepareStatement("INSERT into payroll_history(rate, sssDeduction, pagibigDeduction, "
-                    + "philHealthDeduction, bonus, cashAdvance, loan, days, overTime, totalSalary, taxDeduction, holidayBonus, claimed, employeeID, name) "
-                    + "VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
-//            PreparedStatement psHistory = c.prepareStatement("UPDATE payroll_history set rate = ?, sssDeduction = ?, pagibigDeduction = ?, philHealthDeduction = ?," +
-//            " bonus = ?, cashAdvance = ?, loan = ?, days = ?, overTime = ?, totalSalary = ?, taxDeduction = ?, holidayBonus = ?, claimed = ? where employeeID = ?");
-            psHistory.setFloat(1, rate);
-            psHistory.setFloat(2, sssDeduction);
-            psHistory.setFloat(3, pagibigDeduction);
-            psHistory.setFloat(4, philHealthDeduction);
-            psHistory.setFloat(5, bonus);
-            psHistory.setFloat(6, cashAdvance);
-            psHistory.setFloat(7, loan);
-            psHistory.setInt(8, days);
-            psHistory.setFloat(9, overTime);
-            psHistory.setFloat(10, totalSalary);
-            psHistory.setFloat(11, taxDeduction);
-            psHistory.setFloat(12, holidayBonus);
-            psHistory.setInt(13, 1);
-            psHistory.setInt(14, employeeID);
-            psHistory.setString(15, name);
-//        
-            psHistory.executeUpdate();
-            PreparedStatement ps1 = c.prepareStatement("UPDATE users set SSSDeduction = ?, pagibigDeduction = ?,"+
-                    " philHealthDeduction = ?, taxDeduction = ?, rate = ? where employeeID = ?");
-            ps1.setFloat(1, sssDeduction);
-            ps1.setFloat(2, pagibigDeduction);
-            ps1.setFloat(3, philHealthDeduction);
-            ps1.setFloat(4, taxDeduction);
-            ps1.setFloat(5, rate);
-            ps1.setFloat(6, employeeID);
-            
-            int updateRows = ps1.executeUpdate();
-            c.close();
-            if(updateRows > 0){
-                return "Successful";
-            }
-            else{
-                return "Failed";
+            int rows = ps.executeUpdate();
+
+            if(rows > 0){
+                PreparedStatement psHistory = c.prepareStatement("INSERT into payroll_history(rate, sssDeduction, pagibigDeduction, "
+                        + "philHealthDeduction, bonus, cashAdvance, loan, days, overTime, totalSalary, taxDeduction, holidayBonus, claimed, employeeID, name) "
+                        + "VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
+    //            PreparedStatement psHistory = c.prepareStatement("UPDATE payroll_history set rate = ?, sssDeduction = ?, pagibigDeduction = ?, philHealthDeduction = ?," +
+    //            " bonus = ?, cashAdvance = ?, loan = ?, days = ?, overTime = ?, totalSalary = ?, taxDeduction = ?, holidayBonus = ?, claimed = ? where employeeID = ?");
+                psHistory.setFloat(1, rate);
+                psHistory.setFloat(2, sssDeduction);
+                psHistory.setFloat(3, pagibigDeduction);
+                psHistory.setFloat(4, philHealthDeduction);
+                psHistory.setFloat(5, bonus);
+                psHistory.setFloat(6, cashAdvance);
+                psHistory.setFloat(7, loan);
+                psHistory.setFloat(8, days);
+                psHistory.setFloat(9, overTime);
+                psHistory.setFloat(10, totalSalary);
+                psHistory.setFloat(11, taxDeduction);
+                psHistory.setFloat(12, holidayBonus);
+                psHistory.setInt(13, 1);
+                psHistory.setInt(14, employeeID);
+                psHistory.setString(15, name);
+    //        
+                psHistory.executeUpdate();
+                PreparedStatement ps1 = c.prepareStatement("UPDATE users set SSSDeduction = ?, pagibigDeduction = ?,"+
+                        " philHealthDeduction = ?, taxDeduction = ?, rate = ? where employeeID = ?");
+                ps1.setFloat(1, sssDeduction);
+                ps1.setFloat(2, pagibigDeduction);
+                ps1.setFloat(3, philHealthDeduction);
+                ps1.setFloat(4, taxDeduction);
+                ps1.setFloat(5, rate);
+                ps1.setFloat(6, employeeID);
+
+                int updateRows = ps1.executeUpdate();
             }
         }
-        else{
-            return "Failed";
+        else {
+            PreparedStatement ps = c.prepareStatement("UPDATE payroll set rate = ?, sssDeduction = ?, pagibigDeduction = ?, philHealthDeduction = ?," +
+            " bonus = ?, cashAdvance = ?, loan = ?, days = ?, overTime = ?, totalSalary = ?, taxDeduction = ?, holidayBonus = ?, claimed = ? where employeeID = ?");
+        
+        
+            ps.setFloat(1, rate);
+            ps.setFloat(2, sssDeduction);
+            ps.setFloat(3, pagibigDeduction);
+            ps.setFloat(4, philHealthDeduction);
+            ps.setFloat(5, bonus);
+            ps.setFloat(6, cashAdvance);
+            ps.setFloat(7, loan);
+            ps.setFloat(8, days);
+            ps.setFloat(9, overTime);
+            ps.setFloat(10, totalSalary);
+            ps.setFloat(11, taxDeduction);
+            ps.setFloat(12, holidayBonus);
+            ps.setInt(13, claimed);
+            ps.setInt(14, employeeID);
+
+            int rows = ps.executeUpdate();
         }
+        
+        return "Successful";
     }
     public static void deleteAllTimeLogs() throws ClassNotFoundException, SQLException{
         Connection c = connect();
